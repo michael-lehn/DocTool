@@ -1,0 +1,372 @@
+#  package FileTree;
+#  use strict;
+#  use DirHandle;
+#  use Linebuffer;
+#  use BerkeleyDB;
+#  use MLDBM qw(BerkeleyDB::Btree);
+#  
+#  BEGIN {
+#      our @SourceFiles = (qw(cc), qw(tcc), qw(cpp), qw(cxx), qw(c++));
+#      our @HeaderFiles = (qw(h), qw(hpp), qw(hxx), qw(h++));
+#      our @DocFiles = (qw(doc));
+#      our @AllFiles = (@SourceFiles, @HeaderFiles, @DocFiles);
+#  
+#      die "[ERROR] Convert: \"DB_DIR\" not specified in configuration."
+#          unless defined $ENV{DB_DIR};
+#  
+#      DocUtils->Mkdir(path => $ENV{DB_DIR});
+#  }
+#  
+#  sub new
+#  {
+#      my $proto = shift;
+#      my %args = @_;
+#  
+#      my $class = ref($proto) || $proto;
+#      my $self  = {prefix => $ENV{DOCSRC_DIR},
+#                   db => {},
+#                   fileTree => undef,
+#                   %args};
+#      bless ($self, $class);
+#  
+#      $self->setupDB();
+#      $self->updateDB();
+#  }
+#  
+#  sub updateDB
+#  {
+#      my $self = shift;
+#  
+#      my $files = FileTree->ScanDirectory(prefix => $self->{prefix});
+#      my $fileTreeHash = FileTree->FileTreeHash(files => $files);
+#  
+#      my $fileTree = FileTree->CreateFileTree(files => $files);
+#  
+#      my @filePaths = keys %{$fileTreeHash};
+#      push(@filePaths, "");
+#  
+#      for my $path (@filePaths) {
+#          my @expandDir = split("/", $path);
+#  
+#          my $linebuffer = Linebuffer->new();
+#          FileTree->DumpFileTree(fileTree => $fileTree,
+#                                 linebuffer => $linebuffer,
+#                                 pathToExpand => \@expandDir);
+#  
+#          my $compressed = join("#", $linebuffer->content());
+#          $compressed =~ s/\n//g;
+#          $compressed =~ s/ //g;
+#  
+#          unless ($self->{db}->{$path}) {
+#              $self->{db}->{$path} = {compressed => $compressed,
+#                                      html => [$linebuffer->content()]};
+#              print STDERR "[INFO] new file tree \"$path\"\n";
+#  
+#              # write through new file tree $path
+#              $self->writeFileTree(path => $path);
+#          } else {
+#              my $record = $self->{db}->{$path};
+#              unless ($record->{compressed} eq $compressed) {
+#                  $record->{compressed} = $compressed;
+#                  $record->{html} = [$linebuffer->content()];
+#  
+#                  print STDERR "[INFO] updating file tree \"$path\"\n";
+#                  $self->{db}->{$path} = $record;
+#  
+#                  # write through modified file tree $path
+#                  $self->writeFileTree(path => $path);
+#              } else {
+#                  # print STDERR "[INFO] reusing file tree \"$path\"\n";
+#              }
+#          }
+#      }
+#      return $self;
+#  }
+#  
+#  sub writeFileTree
+#  {
+#      my $self = shift;
+#      my %args = (path => undef,
+#                  @_);
+#  
+#      my $docEnv = DocEnv->new(outputPath => $args{path},
+#                               outputFilename => "filetree.html");
+#      $docEnv->setVariable(variable => qw(TITLE),
+#                           value => "Browsing Directory: $args{path}/");
+#  
+#      my @lines;
+#      push(@lines, $docEnv->filter(file => $ENV{FILETREE_HEADER}),
+#                   @{$self->{db}->{$args{path}}->{html}},
+#                   $docEnv->filter(file => $ENV{FILETREE_FOOTER}));
+#  
+#      DocUtils->SaveLinebuffer(file => $docEnv->{outputFile},
+#                               linesRef => \@lines);
+#  }
+#  
+#  sub setupDB
+#  {
+#      my $self = shift;
+#  
+#      my $dbFile = $self->{prefix};
+#      $dbFile =~ s/^\///g;
+#      $dbFile =~ s/\/$//g;
+#      $dbFile =~ s/\//_/g;
+#      $dbFile = "FileTree_" . $dbFile;
+#      $dbFile = DocUtils->CreateFullpath(prefix => $ENV{DB_DIR},
+#                                         basename => $dbFile,
+#                                         extension => "db");
+#  
+#      tie %{$self->{db}}, "MLDBM",
+#          -Filename => "$dbFile",
+#          -Flags    => DB_CREATE
+#      || die "[ERROR] can not tie to \"$dbFile\"";
+#  }
+#  
+#  sub ScanDirectory
+#  {
+#      my $class = shift;
+#      my %args = (path => undef,
+#                  prefix => undef,
+#                  @_);
+#  
+#      my $found = [];
+#      my $fullpath = DocUtils->CreateFullpath(prefix => $args{prefix},
+#                                              path => $args{path});
+#      my $dh = DirHandle->new($fullpath) || die ("cannot open dir: $args{path}");
+#  
+#  
+#      my @subdirs = ();
+#      while (my $item = $dh->read()) {
+#          next if ($item eq ".") || ($item eq "..");
+#  
+#          my $itemPath = DocUtils->CreateFullpath(prefix => $args{path},
+#                                                  path => $item);
+#          my $itemFullpath = DocUtils->CreateFullpath(prefix => $fullpath,
+#                                                      path => $item);
+#  
+#          if (-d $itemFullpath) {
+#              push(@{$found}, @{$class->ScanDirectory(path => $itemPath,
+#                                                      prefix => $args{prefix})});
+#          }
+#  
+#          if (-f $itemFullpath) {
+#              my $extension = DocUtils->Extension(fullpath => $item);
+#  
+#              if (grep {$_ eq $extension} @FileTree::AllFiles) {
+#                  push(@{$found}, $itemPath);
+#              }
+#          }
+#      }
+#  
+#      $dh->close();
+#      return $found;
+#  }
+#  
+#  sub CreateFileTree
+#  {
+#      my $class = shift;
+#      my %args = (files => undef,
+#                  @_);
+#  
+#      my $fileTree = {type => "dir",
+#                      content => {}};
+#      for my $file (@{$args{files}}) {
+#          my @path = split("/", $file);
+#  
+#          my $node = $fileTree;
+#          for (my $i=0; $i<$#path; ++$i) {
+#              unless ($node->{content}->{$path[$i]}) {
+#                  $node->{content}->{$path[$i]} = {type => "dir",
+#                                                   content => {}};
+#              }
+#              $node = $node->{content}->{$path[$i]};
+#          }
+#  
+#          my $basename = DocUtils->Basename(fullpath => $path[-1]);
+#          my $extension = DocUtils->Extension(fullpath => $path[-1]);
+#  
+#          unless ($node->{content}->{$basename}) {
+#              $node->{content}->{$basename} = {type => "file",
+#                                               extensions => []};
+#          }
+#          push(@{$node->{content}->{$basename}->{extensions}}, $extension);
+#      }
+#      return $fileTree;
+#  }
+#  
+#  sub MakeDirLink
+#  {
+#      my $class = shift;
+#      my %args = (currentPath => undef,
+#                  subdir => undef,
+#                  filetreePath => undef,
+#                  @_);
+#  
+#      my $subdirPath = DocUtils->CreateFullpath(prefix => $args{currentPath},
+#                                                path => $args{subdir});
+#  
+#      my $remove = undef;
+#  
+#      if ($subdirPath eq $args{filetreePath}) {
+#          $subdirPath = $subdirPath . "/..";
+#      }
+#      my $subdirFullpath = DocUtils->CreateFullpath(path => $subdirPath,
+#                                                    filename => "filetree.html");
+#  
+#      my $relPath =DocUtils->RelativePath(currentPath => $args{filetreePath},
+#                                          destinationPath => $subdirFullpath);
+#  
+#      return "<a href=\"$relPath\" class=\"filetree dir\">$args{subdir}/</a>";
+#  }
+#  
+#  sub MakeFileLink
+#  {
+#      my $class = shift;
+#      my %args = (currentPath => undef,
+#                  basename => undef,
+#                  extensions => undef,
+#                  filetreePath => undef,
+#                  @_);
+#  
+#      my $foundDoc = undef;
+#      my @ext;
+#  
+#      for my $ext (@{$args{extensions}}) {
+#          if ($ext eq "doc") {
+#              $foundDoc = 1;
+#          } else {
+#              push(@ext, $ext);
+#          }
+#      }
+#      my $link;
+#  
+#      if ($foundDoc) {
+#          my $file = DocUtils->CreateFullpath(path => $args{currentPath},
+#                                              basename => $args{basename},
+#                                              extension => "html");
+#          $file =DocUtils->RelativePath(currentPath => $args{filetreePath},
+#                                        destinationPath => $file);
+#          $link = "<a href=\"$file\" class=\"filetree file linked\">".
+#                  "$args{basename}</a>";
+#      } else {
+#          $link = "<span class=\"filetree file unlinked\">$args{basename}</span>";
+#      }
+#  
+#      if (scalar(@ext)>0) {
+#          my @file;
+#          for (my $i=0; $i<scalar(@ext); ++$i) {
+#              my $file = DocUtils->CreateFullpath(path => $args{currentPath},
+#                                                  basename => $args{basename},
+#                                                  extension => "$ext[$i].html");
+#              $file =DocUtils->RelativePath(currentPath => $args{filetreePath},
+#                                            destinationPath => $file);
+#              push(@file, $file);
+#          }
+#  
+#          $link = $link .
+#                  "<span class=\"filetree fileextension bracket\"> [ </span>";
+#          for (my $i=0; $i<scalar(@ext)-1; ++$i) {
+#              $link = $link .
+#                      "<a href=\"$file[$i]\"" .
+#                      " class=\"filetree fileextension\">.$ext[$i]</a>" .
+#                      "<span class=\"filetree fileextension comma\">, </span>";
+#          }
+#          $link = $link .
+#                 "<a href=\"$file[-1]\"".
+#                 " class=\"filetree fileextension linked\">.$ext[-1]</a>".
+#                 "<span class=\"filetree fileextension bracket\"> ]</span>";
+#      }
+#      return $link;
+#  }
+#  
+#  sub DumpFileTree
+#  {
+#      my $class = shift;
+#      my %args = (fileTree => undef,
+#                  linebuffer => undef,
+#                  pathToExpand => undef,
+#                  expandedPath => [],
+#                  @_);
+#  
+#      die "[ERROR] You have to pass a file tree object."
+#          unless $args{fileTree};
+#      die "[ERROR] You have to pass a linebuffer object."
+#          unless $args{fileTree};
+#  
+#      my $content = $args{fileTree}->{content};
+#  
+#      $args{linebuffer}->add(line => "<ul class=\"filetree\">");
+#      ++$args{linebuffer}->{indentLevel};
+#  
+#      my $filetreePath = join("/", @{$args{expandedPath}}, @{$args{pathToExpand}});
+#      my $currentDir = join("/", @{$args{expandedPath}});
+#  
+#      # dump files in current directory
+#      for my $node (sort keys %{$content}) {
+#          next unless $content->{$node}->{type} eq "file";
+#  
+#          my $extensions = $content->{$node}->{extensions};
+#          my $link = $class->MakeFileLink(currentPath => $currentDir,
+#                                          basename => $node,
+#                                          extensions => $extensions,
+#                                          filetreePath => $filetreePath);
+#  
+#          $args{linebuffer}->add(line => "<li class=\"filetree file\">$link</li>");
+#      }
+#  
+#      # dump subdirectories
+#      for my $node (sort keys %{$content}) {
+#          next unless $content->{$node}->{type} eq "dir";
+#  
+#          my $subdirPath = DocUtils->CreateFullpath(path => $currentDir,
+#                                                    filename => $node);
+#  
+#          my $link = $class->MakeDirLink(currentPath => $currentDir,
+#                                         subdir => $node,
+#                                         filetreePath => $filetreePath);
+#  
+#          # expand subdirectory 
+#          if ((scalar(@{$args{pathToExpand}})>0) &&
+#              (${$args{pathToExpand}}[0] eq $node))
+#          {
+#              $args{linebuffer}->add(line => "<li class=\"filetree dir expanded\">$link");
+#  
+#              push(@{$args{expandedPath}}, shift(@{$args{pathToExpand}}));
+#              ++$args{linebuffer}->{indentLevel};
+#              FileTree->DumpFileTree(fileTree => $content->{$node},
+#                                     linebuffer => $args{linebuffer},
+#                                     pathToExpand => $args{pathToExpand},
+#                                     expandedPath => $args{expandedPath});
+#              --$args{linebuffer}->{indentLevel};
+#              $args{linebuffer}->add(line => "</li>");
+#          } else {
+#              $args{linebuffer}->add(line => "<li class=\"filetree dir\">$link");
+#          }
+#      }
+#  
+#      --$args{linebuffer}->{indentLevel};
+#      $args{linebuffer}->add(line => "</ul>");
+#  }
+#  
+#  sub FileTreeHash
+#  {
+#      my $class = shift;
+#      my %args = (files => undef,
+#                  @_);
+#  
+#      my $fileTreeHash = {};
+#      for my $line (@{$args{files}}) {
+#          $line =~ /(.*)\/[^\/]*$/;
+#          my $path = $1;
+#  
+#          next unless $path;
+#  
+#          unless ($fileTreeHash->{$path}) {
+#              $fileTreeHash->{$path} = {key => undef,
+#                                        html => undef};
+#          }
+#      }
+#      return $fileTreeHash;
+#  }
+#  
+#  1;

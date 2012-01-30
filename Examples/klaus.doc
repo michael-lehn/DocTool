@@ -1,0 +1,13 @@
+===
+C++
+===
+First steps in c++
+
+:import:    examples/main.cc
+
+#:compile:   examples/main.cc -> main
+#:run:       main > out 2>err
+
+This produces the following output
+
+:import:    out

@@ -1,0 +1,55 @@
+# echo all file in current directory
+for i in *; do
+    echo $i
+done; ech
++ for i in '*'
++ echo doctool.preconfig
+doctool.preconfig
++ for i in '*'
++ echo example.doc
+example.doc
++ for i in '*'
++ echo examples
+examples
++ for i in '*'
++ echo klaus.doc
+klaus.doc
++ for i in '*'
++ echo lists.doc
+lists.doc
++ for i in '*'
++ echo log
+log
++ for i in '*'
++ echo mixed
+mixed
++ for i in '*'
++ echo out
+out
++ for i in '*'
++ echo ralf.doc
+ralf.doc
++ for i in '*'
++ echo stip.cpp
+stip.cpp
++ for i in '*'
++ echo stip.doc
+stip.doc
++ for i in '*'
++ echo test
+test
++ for i in '*'
++ echo test01.txt
+test01.txt
++ for i in '*'
++ echo tutorial
+tutorial
++ for i in '*'
++ echo vars.sh
+vars.sh
++ ech
+/tmp/ReStructuredText/shell.sh: line 4: ech: command not found
+# produce annother error message
+ech
++ ech
+/tmp/ReStructuredText/shell.sh: line 6: ech: command not found

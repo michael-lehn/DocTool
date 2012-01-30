@@ -1,0 +1,35 @@
+
+</div>
+
+&nbsp;
+
+<div id="navigate_tut_bottom">
+#IF_PREVIOUS_PAGE_#
+    <div class="nav_tut_left"><a class="nav" href="#_RELPATH_#/#_PREVIOUS_PAGE_HTML_#">&lt; Page #_PREVIOUS_PAGE_#</a></div>
+#FI_PREVIOUS_PAGE_#
+
+#IF_NEXT_PAGE_#
+    <div class="nav_tut_right"><a class="nav" href="#_RELPATH_#/#_NEXT_PAGE_HTML_#">Page #_NEXT_PAGE_# &gt;</a></div>
+#FI_NEXT_PAGE_#
+
+#IF_FILE_TREE_#
+    <div class="nav_tut_right"><a class="nav" href="#_FILE_TREE_#">Browse Files</a></div>
+#FI_FILE_TREE_#
+
+<div class="nav_tut_center"><a class="nav" href="#_NAV_UP_#">#_NAV_UP_TOPIC_#</a></div>
+
+
+</div>
+
+<div id="footer">
+#IF_CURRENT_FILENAME_#
+    <p id="src">View <a href="#_CURRENT_FILENAME_#.txt">document source</a></p>
+#FI_CURRENT_FILENAME_#
+    <p id="copy">&copy; #_YEAR_#<a href="#_AUTHOR_WEBSITE_#">#_AUTHOR_#</a></p>
+</div>
+
+
+</div>
+
+</body>
+</html>

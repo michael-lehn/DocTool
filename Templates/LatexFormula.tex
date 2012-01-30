@@ -1,0 +1,17 @@
+\documentclass[10pt]{article}
+\usepackage{amssymb,amstext,amsbsy,graphicx}
+\usepackage{geometry}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+
+\pagestyle{empty}
+
+\newcommand{\abl}{'}
+
+
+\begin{document}
+\setbox0\hbox{$##LATEXFORMULA##$}%
+\message{//depth=\the\dp0//}%
+\box0%
+\end{document}
+

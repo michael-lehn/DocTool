@@ -1,0 +1,118 @@
+=====
+Title
+=====
+
+Paragraph after title and before the first section.  Here you can briefly
+describe what this document is about.
+
+Here a second paragraph.
+
+First Section
+=============
+To make a throw, the competitor starts in a circle of 2.5 metres (8 feet
+2½ inches) diameter, which is recessed in a concrete pad by 20 mm. The thrower
+typically takes an initial stance facing away from the direction of the throw.
+He then spins counter-clockwise (for right-handers) around one and a half times
+through the circle to build momentum, then releases his throw. The discus must
+land within a 34.92-degree sector.
+
+The rules of competition for discus are virtually identical to those of shot put
+(see the shot put article), except that the circle is larger, a stop board is
+not used and there are no form rules concerning how the discus is to be thrown.
+There is, however, one conflicting nuance: Under NCAA, USATF, IAAF and WMA
+rules, if a discus hits the surrounding safety cage and is deflected into the
+sector, it is ruled a legal throw; under US high school rules it is ruled a
+foul.
+
+Distance
+--------
+The distance from the front edge of the circle to where the discus has landed is
+measured, and distances are rounded down to the nearest centimetre (NCAA, USATF,
+IAAF, WMA) or whole inch (US high school). The competitor's best throw from the
+allocated number of throws, typically three to six, is recorded, and the
+competitor who legally throws the discus the farthest is declared the winner.
+Ties are broken by determining which thrower has the longer second-best throw.
+
+Basic Motion
+------------
+The basic motion is a forehanded sidearm movement. The discus is spun off the
+index finger or the middle finger of the throwing hand. In flight the disc spins
+clockwise when viewed from above for a right-handed thrower, and
+counter-clockwise for a lefty. As well as achieving maximum momentum in the
+discus on throwing, the discus' distance is also determined by the trajectory
+the thrower imparts, as well as the aerodynamic behavior of the discus.
+Generally, throws into a moderate headwind achieve the maximum distance. Also, a
+faster-spinning discus imparts greater gyroscopic stability. The technique of
+discus throwing is quite difficult to master and needs lots of experience to get
+right, thus most top throwers are thirty years old or more.
+
+
+Second Section
+==============
+To make a throw, the competitor starts in a circle of 2.5 metres (8 feet
+2½ inches) diameter, which is recessed in a concrete pad by 20 mm. The thrower
+typically takes an initial stance facing away from the direction of the throw.
+He then spins counter-clockwise (for right-handers) around one and a half times
+through the circle to build momentum, then releases his throw. The discus must
+land within a 34.92-degree sector. The rules of competition for discus are
+virtually identical to those of shot put (see the shot put article), except that
+the circle is larger, a stop board is not used and there are no form rules
+concerning how the discus is to be thrown. There is, however, one conflicting
+nuance: Under NCAA, USATF, IAAF and WMA rules, if a discus hits the surrounding
+safety cage and is deflected into the sector, it is ruled a legal throw; under
+US high school rules it is ruled a foul.
+
+The distance from the front edge of the circle to where the discus has landed is
+measured, and distances are rounded down to the nearest centimetre (NCAA, USATF,
+IAAF, WMA) or whole inch (US high school). The competitor's best throw from the
+allocated number of throws, typically three to six, is recorded, and the
+competitor who legally throws the discus the farthest is declared the winner.
+Ties are broken by determining which thrower has the longer second-best throw.
+
+The basic motion is a forehanded sidearm movement. The discus is spun off the
+index finger or the middle finger of the throwing hand. In flight the disc spins
+clockwise when viewed from above for a right-handed thrower, and
+counter-clockwise for a lefty. As well as achieving maximum momentum in the
+discus on throwing, the discus' distance is also determined by the trajectory
+the thrower imparts, as well as the aerodynamic behavior of the discus.
+Generally, throws into a moderate headwind achieve the maximum distance. Also, a
+faster-spinning discus imparts greater gyroscopic stability. The technique of
+discus throwing is quite difficult to master and needs lots of experience to get
+right, thus most top throwers are thirty years old or more.
+
+Third Section
+=============
+To make a throw, the competitor starts in a circle of 2.5 metres (8 feet
+2½ inches) diameter, which is recessed in a concrete pad by 20 mm. The thrower
+typically takes an initial stance facing away from the direction of the throw.
+He then spins counter-clockwise (for right-handers) around one and a half times
+through the circle to build momentum, then releases his throw. The discus must
+land within a 34.92-degree sector. The rules of competition for discus are
+virtually identical to those of shot put (see the shot put article), except that
+the circle is larger, a stop board is not used and there are no form rules
+concerning how the discus is to be thrown. There is, however, one conflicting
+nuance: Under NCAA, USATF, IAAF and WMA rules, if a discus hits the surrounding
+safety cage and is deflected into the sector, it is ruled a legal throw; under
+US high school rules it is ruled a foul.
+
+Distance
+--------
+The distance from the front edge of the circle to where the discus has landed is
+measured, and distances are rounded down to the nearest centimetre (NCAA, USATF,
+IAAF, WMA) or whole inch (US high school). The competitor's best throw from the
+allocated number of throws, typically three to six, is recorded, and the
+competitor who legally throws the discus the farthest is declared the winner.
+Ties are broken by determining which thrower has the longer second-best throw.
+
+Basic Motion
+------------
+The basic motion is a forehanded sidearm movement. The discus is spun off the
+index finger or the middle finger of the throwing hand. In flight the disc spins
+clockwise when viewed from above for a right-handed thrower, and
+counter-clockwise for a lefty. As well as achieving maximum momentum in the
+discus on throwing, the discus' distance is also determined by the trajectory
+the thrower imparts, as well as the aerodynamic behavior of the discus.
+Generally, throws into a moderate headwind achieve the maximum distance. Also, a
+faster-spinning discus imparts greater gyroscopic stability. The technique of
+discus throwing is quite difficult to master and needs lots of experience to get
+right, thus most top throwers are thirty years old or more.

@@ -1,0 +1,108 @@
+#! /usr/bin/perl -w
+
+
+BEGIN {
+    unless ($ENV{DOCTOOL}) {
+        $ENV{DOCTOOL} = "/Users/lehn/Documents/DocToll";
+
+        print "[INFO] Environment variable DOCTOOL not set.\n";
+        print "[INFO] Using default value \"$ENV{DOCTOOL}\"\n";
+    } else {
+        print "[INFO] Using DocTool: \$ENV{DOCTOOL}=\"$ENV{DOCTOOL}\"\n";
+    }
+
+    unshift(@INC, "$ENV{DOCTOOL}/Library");
+    unshift(@INC, "$ENV{DOCTOOL}/Library/Components");
+    unshift(@INC, "$ENV{DOCTOOL}/Library/Tools");
+}
+
+use DocUtils;
+
+BEGIN {
+    DocUtils->EvalConfigFile(file => "doctool.preconfig");
+    DocUtils->EvalConfigFile(file => "$ENV{DOCTOOL}/Configuration/doctool.config");
+    DocUtils->EvalConfigFile(file => "doctool.postconfig");
+}
+
+use DocEnv;
+use Html;
+use Link;
+use Filetree;
+
+DocUtils->Install(file => $ENV{DEFAULT_CSS},
+                  to => $ENV{HTML_DIR});
+
+my @docfiles = DocUtils->FindFiles(path => $ENV{DOCSRC_DIR},
+                                      pattern => '.*\.doc$');
+
+my @sourcefiles;
+my @sourcefileExt = ("cxx", "h", "tcc", "cc", "f");
+foreach my $ext (@sourcefileExt) {
+    push(@sourcefiles, DocUtils->FindFiles(path => $ENV{DOCSRC_DIR},
+                                           pattern => '.*\.' . $ext . "\$"));
+}
+
+my @allFiles = (@sourcefiles, @docfiles);
+my @dirs = DocUtils->ExtractDirectories(files => \@allFiles,
+                                        allParentDirectories => 1);
+
+@allFiles = Filetree->CompressFileList(\@allFiles);
+
+my @filetreeItems;
+
+print STDERR "\n";
+print STDERR "[INFO] Creating filetrees:\n";
+
+foreach my $dir (@dirs) {
+    print STDERR "[INFO] Creating filetree for \"$dir/\"\n";
+
+    my $docEnv = DocEnv->new(sourceFile => join("/", $dir, "dir.html"));
+
+    # set default document id
+    my $dirId = "dir:$dir/";
+    Link->AddDocumentId(documentId => $dirId, docEnv => $docEnv);
+
+    my $filetree = Filetree->new(directory   => $dir,
+                                 allFiles    => \@allFiles);
+
+    push(@filetreeItems, [$filetree, $docEnv]);
+
+    print STDERR "[INFO]  ... done.\n";
+}
+
+
+print STDERR "\n";
+print STDERR "[INFO] Formatting filetrees:\n";
+
+foreach my $item (@filetreeItems) {
+    my $filetree = $item->[0];
+    my $docEnv   = $item->[1];
+
+    print STDERR "[INFO] Formatting filetree for directory " .
+                 "\"$docEnv->{sourcePath}\"\n";
+    print STDERR "[INFO]  ... and installing it as \"$docEnv->{outputFile}\"\n";
+
+    my $html = Html->new(adt => $filetree, docEnv => $docEnv);
+
+    my @lines;
+    $docEnv->{sourceFilename} = undef;
+
+    $docEnv->{vars}->{HOME} = Html->MakeLink(fromDocEnv => $docEnv,
+                                             toDocEnv => "doc:index");
+
+    my $link  = $docEnv->{sourcePath};
+    $docEnv->{vars}->{TITLE} = $ENV{DOC_PROJECT} .  ": " . $link;
+
+    $link = "<a href=\"#$link\" class=\"filetree title\">/$link</a>";
+    $docEnv->{vars}->{FILETREE_CURRENTPATH} = $ENV{DOC_PROJECT} .
+                                              ": " . $link;
+
+    push(@lines, $docEnv->filter(file => $ENV{FILETREE_HEADER}),
+                 $html->content(),
+                 $docEnv->filter(file => $ENV{FILETREE_FOOTER}));
+
+    DocUtils->SaveLinebuffer(file => $docEnv->{outputFile},
+                             linesRef => \@lines);
+
+   print STDERR "[INFO]  ... done.\n";
+}

@@ -1,0 +1,9 @@
+====
+Demo                                                                [TOC]
+====
+
+This document demonstrates different features of `docTool`.
+
+Latex
+=====
+Here a simple `Latex` formula: $\sum\limits_{k=1}^{n} \frac{1}{k}$.

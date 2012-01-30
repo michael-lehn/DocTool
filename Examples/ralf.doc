@@ -1,0 +1,60 @@
+=====================
+Ralf __Leidenberger__                                                    [TOC]
+=====================
+
+:document:      ralf
+:author:        Rumpelstilzchen
+:description:   These are some _important_ informations __about[1]__ the   +
+                person called *Ralf*. And __about[2]__ other things.
+:link:          __Leidenberger__ -> my::example#PARA
+:link:          __about[1]__ -> #x11
+:link:          __about[2]__ -> my::example#PARA
+
+
+__Daten__
+=========
+Hier ein paar Daten in Tabellenform:
+
+    +------------+------------------------+
+    | Name       |   Leidenberger         |
+    +------------+------------------------+
+    | Vorname    |   Ralf                 |
+    +------------+------------------------+
+    
+Und wenn man was wichtiges hervorgeben
+möchte:
+
+    ______ WARNING _________________
+    Wichtig! Wichtig!
+    
+    Zur Info (__about[3]__)
+    ________________________________
+
+And note
+
+    ______ NOTE ____________________
+    Wichtig! Wichtig!
+    
+    Zur Info (__about[3]__)
+    ________________________________
+
+
+:link: __Daten__ -> http://www.spiegel.de
+:link: __about[3]__ -> my::example#PARA
+
+
+Listen                                                                [[x11]]
+======
+Hier ein Beispiel zu Listen  $111+22$:
+ - Ein ersten Punkt
+ - Eine Tabelle in der Liste
+
+   +------------+------------------------+
+   | Name       |   Leidenberger         |
+   +            +------------------------+
+   | Vorname    |   Ralf                 |
+   +------------+------------------------+
+
+ - Zweiter Punkt
+    - Unterpunkt
+    - Noch einer

@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<META http-equiv="Content-Style-Type" content="text/css">
+<title>
+    #_TOPIC_#
+    #IF_LAST_PAGE_#
+        (#_PAGE_#/#_LAST_PAGE_#)
+    #FI_LAST_PAGE_#
+</title>
+<link rel="stylesheet" type="text/css" href="#_REL_HTML_DIR_#/default.css" title="default style" media="screen,projection">
+</head>
+<body>
+
+<div id="wrap">
+<div id="navigate_tut">
+#IF_PREVIOUS_PAGE_#
+    <div class="nav_tut_left"><a class="nav" href="#_RELPATH_#/#_PREVIOUS_PAGE_HTML_#">&lt; Page #_PREVIOUS_PAGE_#</a></div>
+#FI_PREVIOUS_PAGE_#
+
+#IF_NEXT_PAGE_#
+    <div class="nav_tut_right"><a class="nav" href="#_RELPATH_#/#_NEXT_PAGE_HTML_#">Page  #_NEXT_PAGE_# &gt;</a></div>
+#FI_NEXT_PAGE_#
+
+#IF_FILE_TREE_#
+    <div class="nav_tut_right"><a class="nav" href="#_FILE_TREE_#">Browse Files</a></div>
+#FI_FILE_TREE_#
+
+#IF_NAV_UP_TOPIC_#
+    <div class="nav_tut_center"><a class="nav" href="#_NAV_UP_#">#_NAV_UP_TOPIC_#</a></div>
+#FI_NAV_UP_TOPIC_#
+</div>
+
+<div id="content_tut">

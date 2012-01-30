@@ -1,0 +1,292 @@
+#! /usr/bin/perl -w
+
+
+BEGIN {
+    unless ($ENV{DOCTOOL}) {
+        $ENV{DOCTOOL} = "/Users/lehn/Documents/DocToll";
+
+        print STDERR "[INFO] Environment variable DOCTOOL not set.\n";
+        print STDERR "[INFO] Using default value \"$ENV{DOCTOOL}\"\n";
+    } else {
+        print STDERR "[INFO] Using DocTool: \$ENV{DOCTOOL}=\"$ENV{DOCTOOL}\"\n";
+    }
+
+    unshift(@INC, "$ENV{DOCTOOL}/Library");
+    unshift(@INC, "$ENV{DOCTOOL}/Library/Components");
+    unshift(@INC, "$ENV{DOCTOOL}/Library/Tools");
+}
+
+use DocUtils;
+
+BEGIN {
+    DocUtils->EvalConfigFile(file => "doctool.preconfig");
+    DocUtils->EvalConfigFile(file => "$ENV{DOCTOOL}/Configuration/doctool.config");
+    DocUtils->EvalConfigFile(file => "doctool.postconfig");
+}
+
+use DocEnv;
+use Filetree;
+use Linebuffer;
+use Parse;
+use Html;
+
+
+######
+##
+## Process commandline arguments
+##
+######
+
+my $convertSourcefiles = undef;
+
+for (my $i=0; $i<=$#ARGV; ++$i) {
+    if ($ARGV[$i] eq "--convertSourcefiles") {
+        $convertSourcefiles = 1;
+        next;
+    }
+    print STDERR "[ERROR] Unknown commanline argument \"$ARGV[$i]\"\n";
+    print STDERR "\n\nusage: $0 [--convertSourcefiles]\n\n\n";
+    die;
+}
+
+
+######
+##
+## Copy CSS file to website
+##
+######
+
+DocUtils->Install(file => $ENV{DEFAULT_CSS},
+                  to => $ENV{HTML_DIR});
+
+
+######
+##
+## Parse all doc files
+##
+######
+
+my @docfiles = DocUtils->FindFiles(path => $ENV{DOCSRC_DIR},
+                                      pattern => '.*\.doc');
+
+my @adtItems;
+
+print STDERR "\n";
+print STDERR "[INFO] Parsing documents:\n";
+foreach my $docfile (@docfiles) {
+    print STDERR "[INFO] doc file \"$docfile\" will be parsed\n";
+
+    my $docEnv = DocEnv->new(sourceFile => $docfile);
+
+    # parse def-files
+    if (-f "doctool.def") {
+        my $linebuffer = Linebuffer->new(fromFile => "doctool.def",
+                                         docEnv => $docEnv);
+        Parse->new(linebuffer => $linebuffer);
+    }
+
+    # set default document ids
+    my $docId = "file:$docfile";
+    Link->AddDocumentId(documentId => $docId, docEnv => $docEnv);
+    $docId = "doc:$docfile";
+    $docId =~ s/\.doc$//;
+    Link->AddDocumentId(documentId => $docId, docEnv => $docEnv);
+
+    # parse document
+    my $linebuffer = Linebuffer->new(docEnv => $docEnv);
+    my $adt = Parse->new(linebuffer => $linebuffer);
+    push(@adtItems, [$adt, $docEnv]);
+
+    # check for unresolved links
+    Link->DumpUnresolvedLinks();
+
+    print STDERR "[INFO]  ... done.\n";
+}
+
+
+######
+##
+## Create all file trees
+##
+######
+
+my @sourcefiles;
+my @sourcefileExt = ("cxx", "h", "tcc", "cc", "f");
+foreach my $ext (@sourcefileExt) {
+    push(@sourcefiles, DocUtils->FindFiles(path => $ENV{DOCSRC_DIR},
+                                           pattern => '.*\.' . $ext . "\$"));
+}
+
+my @allFiles = (@sourcefiles, @docfiles);
+my @dirs = DocUtils->ExtractDirectories(files => \@allFiles,
+                                        allParentDirectories => 1);
+
+@allFiles = Filetree->CompressFileList(\@allFiles);
+
+my @filetreeItems;
+
+print STDERR "\n";
+print STDERR "[INFO] Creating filetrees:\n";
+
+foreach my $dir (@dirs) {
+    print STDERR "[INFO] Creating filetree for \"$dir/\"\n";
+
+    my $docEnv = DocEnv->new(sourceFile => join("/", $dir, "dir.html"));
+
+    # set default document id
+    my $dirId = "dir:$dir/";
+    Link->AddDocumentId(documentId => $dirId, docEnv => $docEnv);
+
+    my $filetree = Filetree->new(directory   => $dir,
+                                 allFiles    => \@allFiles);
+
+    push(@filetreeItems, [$filetree, $docEnv]);
+
+    print STDERR "[INFO]  ... done.\n";
+}
+
+
+######
+##
+## Process all source files
+##
+######
+
+print STDERR "\n";
+print STDERR "[INFO] Scanning source files:\n";
+
+for my $sourcefile (sort @sourcefiles) {
+    print STDERR "[INFO] Processing source file $sourcefile ...\n";
+
+    my $path     = DocUtils->Path(fullpath => $sourcefile);
+    my $filename = DocUtils->Filename(fullpath => $sourcefile);
+    my $ext      = DocUtils->Extension(fullpath => $sourcefile);
+
+    my $docEnv = DocEnv->new(sourceFile => $sourcefile,
+                             keepExtension => 1);
+
+    my $docId = "file:$sourcefile";
+    print STDERR "[INFO]  ... DocId will be \"$docId\"\n";
+    Link->AddDocumentId(docEnv => $docEnv, documentId => $docId);
+
+    if ($convertSourcefiles) {
+        $docEnv->{vars}->{TITLE} = "$filename ($sourcefile)";
+        $docEnv->{vars}->{HOME} = Html->MakeLink(fromDocEnv => $docEnv,
+                                                 toDocEnv => "doc:index");
+
+        my $currentPath = $docEnv->{sourcePath};
+        my $filetreeLink = Html->MakeLink(fromDocEnv => $docEnv,
+                                          toDocEnv => "dir:$currentPath/");
+        $docEnv->{vars}->{FILETREE} = $filetreeLink;
+
+        my @lines;
+        $docEnv->{sourceFilename} = undef;
+        push(@lines, $docEnv->filter(file => $ENV{SOURCEFILE_HEADER}));
+
+        my @source = DocUtils->LoadLinebuffer(prefix => $path,
+                                              file => $filename,
+                                              removeNewlines => 1);
+        push(@lines, Convert->CodeBlock(codelinesRef => \@source,
+                                        fileExtension => $ext));
+        push(@lines, $docEnv->filter(file => $ENV{SOURCEFILE_FOOTER}));
+        DocUtils->SaveLinebuffer(file => $docEnv->{outputFile},
+                                 linesRef => \@lines);
+    }
+    print STDERR "[INFO]  ... done.\n";
+}
+
+######
+##
+## Format all doc files
+##
+######
+
+print STDERR "\n";
+print STDERR "[INFO] Formatting parsed documents:\n";
+
+for my $adtItem (@adtItems) {
+    my $adt = $adtItem->[0];
+    my $docEnv = $adtItem->[1];
+
+    print STDERR "[INFO] parsed source file \"$docEnv->{sourceFile}\"".
+                 "will be formatted\n";
+    print STDERR "[INFO]  ... output file \"$docEnv->{outputFilename}\"";
+    print STDERR " will be installed in \"$docEnv->{outputPath}\".\n";
+
+    my $html = Html->new(adt => $adt, docEnv => $docEnv);
+
+    if ($docEnv->{sourceFile} ne "index.doc") {
+        $docEnv->{vars}->{HOME} = Html->MakeLink(fromDocEnv => $docEnv,
+                                                 toDocEnv => "doc:index");
+    } else {
+        $docEnv->{vars}->{HOME} = undef;
+    }
+
+    my $currentPath = $docEnv->{sourcePath};
+    my $filetreeLink = Html->MakeLink(fromDocEnv => $docEnv,
+                                      toDocEnv => "dir:$currentPath/");
+    $docEnv->{vars}->{TITLE} = $ENV{DOC_PROJECT} .
+                               " (" .
+                               $docEnv->{sourceBasename} .
+                               ")";
+    $docEnv->{vars}->{FILETREE} = $filetreeLink;
+
+    my @lines;
+    my @content = $html->content();
+
+    push(@lines, $docEnv->filter(file => $ENV{SLIDE_HEADER}),
+                 @content,
+                 $docEnv->filter(file => $ENV{SLIDE_FOOTER}));
+
+    DocUtils->SaveLinebuffer(file => $docEnv->{outputFile},
+                             linesRef => \@lines);
+
+    DocUtils->Install(file => $docEnv->{sourceFile},
+                      to => $docEnv->{outputPath},
+                      newFilename => "$docEnv->{sourceFilename}.txt");
+
+    print STDERR "[INFO]  ... done.\n";
+}
+
+
+######
+##
+## Format all filetrees
+##
+######
+
+print STDERR "\n";
+print STDERR "[INFO] Formatting filetrees:\n";
+
+foreach my $item (@filetreeItems) {
+    my $filetree = $item->[0];
+    my $docEnv   = $item->[1];
+
+    print STDERR "[INFO] Formatting filetree for directory " .
+                 "\"$docEnv->{sourcePath}\"\n";
+    print STDERR "[INFO]  ... and installing it as \"$docEnv->{outputFile}\"\n";
+
+    my $html = Html->new(adt => $filetree, docEnv => $docEnv);
+
+    my @lines;
+    $docEnv->{sourceFilename} = undef;
+
+    $docEnv->{vars}->{HOME} = Html->MakeLink(fromDocEnv => $docEnv,
+                                             toDocEnv => "doc:index");
+
+    my $link  = $docEnv->{sourcePath};
+    $docEnv->{vars}->{TITLE} = $ENV{DOC_PROJECT} .  ": " . $link;
+
+    $link = "<a href=\"#$link\" class=\"filetree title\">/$link</a>";
+    $docEnv->{vars}->{FILETREE_CURRENTPATH} = $ENV{DOC_PROJECT} .
+                                              ": " . $link;
+
+    push(@lines, $docEnv->filter(file => $ENV{FILETREE_HEADER}),
+                 $html->content(),
+                 $docEnv->filter(file => $ENV{FILETREE_FOOTER}));
+
+    DocUtils->SaveLinebuffer(file => $docEnv->{outputFile},
+                             linesRef => \@lines);
+
+   print STDERR "[INFO]  ... done.\n";
+}

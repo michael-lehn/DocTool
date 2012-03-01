@@ -8,26 +8,21 @@
     #FI_TITLE_#
     </title>
 
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-    tex2jax: {
-        inlineMath: [ ['$','$']/*, ["\\(","\\)"]*/ ],
-        displayMath: [ ['$$','$$']/*, ["\\[","\\]"]*/ ],
-        processEscapes: true
-    }
-});
-</script>
-
-
-<script type="text/x-mathjax-config">
+<script type="text/javascript">
   MathJax.Hub.Config({
-    tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+     extensions: ["tex2jax.js"],
+     tex2jax: {
+         inlineMath: [ ['$','$']/*, ["\\(","\\)"]*/ ],
+         displayMath: [ ['$$','$$']/*, ["\\[","\\]"]*/ ],
+         processEscapes: true
+     },
+     "HTML-CSS": { scale: 100 }
   });
 </script>
-<script type="text/javascript"
-  src="https://d3eoax9i5htok0.cloudfront.net/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
 
+<script type="text/javascript"
+ src="http://cdn.mathjax.org/mathjax/2.0-beta/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="Content-Style-Type" content="text/css">

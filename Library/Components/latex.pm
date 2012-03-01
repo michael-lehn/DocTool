@@ -65,7 +65,9 @@ sub html
 #                        " src=\"$relPath/$imageFile\"" .
 #                        " alt=\"some latex code\">";
 #        $args{html}->append(line => $html);
-         $args{html}->append(line => "\$" . $self->{string}->{value} . "\$");
+
+
+        $args{html}->append(line => "\\(" . $self->{string}->{value} . "\\)");
     }
 
     if ($self->{lines}) {

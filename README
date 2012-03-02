@@ -1,0 +1,54 @@
+=======
+DocTool
+=======
+
+The original purpose of this tool is writing the documentation and tutorials
+for the FLENS project:
+
+    http://www.mathematik.uni-ulm.de/~lehn/FLENS/
+
+You can write documentation in a restructured text dialect and doctool will
+produce html.  For example
+
+    http://www.mathematik.uni-ulm.de/~lehn/FLENS/flens/lapack/lapack.doc.txt
+
+will result in
+
+    http://www.mathematik.uni-ulm.de/~lehn/FLENS/flens/lapack/lapack.html
+
+The nice thing is that you can embed shell scripts and C++ code in your
+documents and doctool will execute them and include the output into the HTML.
+For example
+
+    http://www.mathematik.uni-ulm.de/~lehn/FLENS/flens/examples/lapack-getrf.doc.txt
+
+will result in
+
+    http://www.mathematik.uni-ulm.de/~lehn/FLENS/flens/examples/lapack-getrf.html
+
+
+Here some notes on how to use/setup doctool:
+============================================
+
+Usually you only have to adapt the file "Configuration/doctool.config"
+
+https://github.com/michael-lehn/DocTool/blob/master/Configuration/doctool.config
+
+Then add "doctool" to your PATH and also set the DOCTOOL variable, e.g.
+
+export PATH=$PATH:$HOME/DocTool/Executables 
+export DOCTOOL=$HOME/DocTool/
+
+Now can test it with FLENS.  Change to the FLENS directory and run doctool
+
+cd FLENS
+doctool
+
+If existing the config files
+
+(1)  ./doctool.preconfig
+(2)  ${DOCTOOL}/Configuration/doctool.config
+(3)  ./doctool.preconfig
+
+will be processed.
+

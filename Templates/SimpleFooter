@@ -1,6 +1,29 @@
 
 </div> <!-- id="content" -->
 
+
+<div class="nav_tut_middle">
+#IF_HOME_#
+<a class="nav" href="#_HOME_#">Home</a>
+#FI_HOME_#
+
+#IF_BACK_#
+&nbsp;&nbsp;&nbsp;
+<a class="nav" href="#_BACK_#">Back</a>
+#FI_BACK_#
+
+#IF_UP_#
+&nbsp;&nbsp;&nbsp;
+<a class="nav" href="#_UP_#">Up</a>
+#FI_UP_#
+
+#IF_NEXT_#
+&nbsp;&nbsp;&nbsp;
+<a class="nav" href="#_NEXT_#">Next</a>
+#FI_NEXT_#
+</div>
+
+
 <div id="footer">
     <p id="src">
         #IF_SOURCE_FILENAME_#

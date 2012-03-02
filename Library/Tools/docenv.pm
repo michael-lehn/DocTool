@@ -16,6 +16,7 @@ sub new
                  outputPath => undef,
                  outputFile => undef,
                  functions => {},
+                 navigate => undef,
                  keepExtension => 0,
                  vars => {TITLE => undef,
                           SOURCE_FILENAME => undef,

@@ -68,7 +68,7 @@ sub LINKS
 
     for my $defValue (@defValue) {
         die "[ERROR] Unable to parse \"$defValue\""
-            unless $defValue =~ /^\s*?__(.*)__\s*->\s*(\S.*)(#(\S.*))?\s*$/;
+            unless $defValue =~ /^\s*?__(.*)__\s*->\s*(\S.*?)(#(\S.*))?\s*$/;
 
         unless ((defined $1) && (defined $2)) {
             die "[ERROR] Unable to parse \"$defValue\"";
@@ -87,6 +87,42 @@ sub TOCLEVEL
 
     return 1;
 }
+
+sub NAVIGATE
+{
+    my ($class, $docEnv, @defValue) = @_;
+
+    my %navigate = (up   => undef,
+                    next => undef,
+                    back => undef);
+
+    for my $defValue (@defValue) {
+        die "[ERROR] Unable to parse \"$defValue\""
+            unless $defValue =~ /^\s*?__(.*)__\s*->\s*(\S.*?)(#(\S.*))?\s*$/;
+
+        unless ((defined $1) && (defined $2)) {
+            die "[ERROR] Unable to parse \"$defValue\"";
+        }
+
+        my $key         = $1;
+        my $destination = $2;
+        my $mark        = $4;
+
+        unless (exists $navigate{$key}) {
+            die "[ERROR] Unknown navigation keyword \"$key\"";
+        }
+
+        if (defined $navigate{$key}) {
+            die "[ERROR] Redefining navigation keyword \"$key\"";
+        }
+
+        $navigate{$key} = [$destination, $mark];
+    }
+
+    $docEnv->{navigate} = \%navigate;
+    return 1;
+}
+
 
 
 sub IMPORT

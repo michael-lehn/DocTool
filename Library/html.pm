@@ -144,7 +144,7 @@ sub MakeLink
         }
         return $args{toDocEnv};
     } else {
-       $args{toDocEnv} = Link->LookUpDocumentId(documentId => $args{toDocEnv});
+        $args{toDocEnv} = Link->LookUpDocumentId(documentId => $args{toDocEnv});
     }
 
     my $currentPath = $args{fromDocEnv}->{outputPath};

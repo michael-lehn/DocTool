@@ -87,9 +87,11 @@ foreach my $docfile (@docfiles) {
 
     # set default document ids
     my $docId = "file:$docfile";
+    print STDERR "[INFO]  ... DocId will be \"$docId\"\n";
     Link->AddDocumentId(documentId => $docId, docEnv => $docEnv);
     $docId = "doc:$docfile";
     $docId =~ s/\.doc$//;
+    print STDERR "[INFO]  ... alternate DocId will be \"$docId\"\n";
     Link->AddDocumentId(documentId => $docId, docEnv => $docEnv);
 
     # parse document
@@ -135,6 +137,7 @@ foreach my $dir (@dirs) {
 
     # set default document id
     my $dirId = "dir:$dir/";
+    print STDERR "[INFO]  ... DocId will be \"$dirId\"\n";
     Link->AddDocumentId(documentId => $dirId, docEnv => $docEnv);
 
     my $filetree = Filetree->new(directory   => $dir,
@@ -220,6 +223,21 @@ for my $adtItem (@adtItems) {
                                                  toDocEnv => "doc:index");
     } else {
         $docEnv->{vars}->{HOME} = undef;
+    }
+
+#
+#   If navigation keys are defined create links and set corresponding vars
+#
+    if ($docEnv->{navigate}) {
+        foreach my $key (keys %{$docEnv->{navigate}}) {
+            next unless defined $docEnv->{navigate}->{$key};
+
+            my ($dest, $mark) = @{$docEnv->{navigate}->{$key}};
+            $docEnv->{vars}->{uc($key)} = Html->MakeLink(fromDocEnv => $docEnv,
+                                                         toDocEnv   => $dest,
+                                                         mark       => $mark);
+            print uc($key), ": ", $docEnv->{vars}->{uc($key)}, "\n"
+        }
     }
 
     my $currentPath = $docEnv->{sourcePath};

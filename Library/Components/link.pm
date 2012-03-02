@@ -115,6 +115,7 @@ sub ResolveLink
             foreach my $linkObject (@{$Link::UnresolvedLinks{$unresolved}}) {
 
                 $linkObject->{dest} = $unresolved;
+                $linkObject->{mark} = $args{mark};
                 my $replace = '"' . $args{destination} . '"';
 
                 $linkObject->{dest} =~ s/^$args{key}$/$replace/ee;

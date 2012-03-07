@@ -1,9 +1,8 @@
 #! /usr/bin/perl -w
 
-
 BEGIN {
     unless ($ENV{DOCTOOL}) {
-        $ENV{DOCTOOL} = "/Users/lehn/Documents/DocToll";
+        $ENV{DOCTOOL} = $ENV{HOME} . "/DocTool";
 
         print STDERR "[INFO] Environment variable DOCTOOL not set.\n";
         print STDERR "[INFO] Using default value \"$ENV{DOCTOOL}\"\n";
@@ -37,15 +36,17 @@ use Html;
 ##
 ######
 
-my $convertSourcefiles = undef;
-
 for (my $i=0; $i<=$#ARGV; ++$i) {
     if ($ARGV[$i] eq "--convertSourcefiles") {
-        $convertSourcefiles = 1;
+        $DocTool::convertSourcefiles = 1;
+        next;
+    }
+    if ($ARGV[$i] eq "--createLatexPics") {
+        $DocTool::createLatexPics = 1;
         next;
     }
     print STDERR "[ERROR] Unknown commanline argument \"$ARGV[$i]\"\n";
-    print STDERR "\n\nusage: $0 [--convertSourcefiles]\n\n\n";
+    print STDERR "\n\nusage: $0 [--convertSourcefiles --createLatexPics]\n\n\n";
     die;
 }
 
@@ -172,7 +173,7 @@ for my $sourcefile (sort @sourcefiles) {
     print STDERR "[INFO]  ... DocId will be \"$docId\"\n";
     Link->AddDocumentId(docEnv => $docEnv, documentId => $docId);
 
-    if ($convertSourcefiles) {
+    if ($DocTool::convertSourcefiles) {
         $docEnv->{vars}->{TITLE} = "$filename ($sourcefile)";
         $docEnv->{vars}->{HOME} = Html->MakeLink(fromDocEnv => $docEnv,
                                                  toDocEnv => "doc:index");
@@ -236,7 +237,6 @@ for my $adtItem (@adtItems) {
             $docEnv->{vars}->{uc($key)} = Html->MakeLink(fromDocEnv => $docEnv,
                                                          toDocEnv   => $dest,
                                                          mark       => $mark);
-            print uc($key), ": ", $docEnv->{vars}->{uc($key)}, "\n"
         }
     }
 

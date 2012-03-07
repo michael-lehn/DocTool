@@ -21,6 +21,18 @@
 
 </div>
 
+#IF_BACK_#
+<a class="nav" href="#_BACK_#">Back</a>
+#FI_BACK_#
+
+#IF_UP_#
+<a class="nav" href="#_UP_#">Up</a>
+#FI_UP_#
+
+#IF_NEXT_#
+<a class="nav" href="#_NEXT_#">Next</a>
+#FI_NEXT_#
+
 <div id="footer">
 #IF_CURRENT_FILENAME_#
     <p id="src">View <a href="#_CURRENT_FILENAME_#.txt">document source</a></p>

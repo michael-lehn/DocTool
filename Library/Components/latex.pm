@@ -1,6 +1,7 @@
 package Latex;
 use strict;
 use Convert;
+use DocTool;
 
 sub SingleQuotes
 {
@@ -45,29 +46,31 @@ sub html
     die unless $args{html};
 
     if ($self->{string}->{value}) {
-#        my $depth = 0;
-#        my $latexFormula = Convert->LatexFormula(
-#                                        codeline => $self->{string}->{value},
-#                                        formulaDepthRef => \$depth);
-#        my $imagePath = DocUtils->Path(fullpath => $latexFormula);
-#        my $imageFile = DocUtils->Filename(fullpath => $latexFormula);
-#
-#        my $sourcePath = $args{html}->{docEnv}->{sourcePath};
-#        my $relPath = DocUtils->RelativePath(currentPath => $sourcePath,
-#                                     removeDestinationPrefix => $ENV{HTML_DIR},
-#                                     destinationPath => $imagePath);
-#
-#        my $html = "<img class=\"formula\"" .
-#                        " style=\"padding:0px 4px;" .
-#                        " vertical-align:baseline;" .
-#                        " position:relative;" .
-#                        " bottom: ${depth}px;\"" .
-#                        " src=\"$relPath/$imageFile\"" .
-#                        " alt=\"some latex code\">";
-#        $args{html}->append(line => $html);
+        if ($DocTool::createLatexPics) {
+            my $depth = 0;
+            my $latexFormula = Convert->LatexFormula(
+                                      codeline => $self->{string}->{value},
+                                      formulaDepthRef => \$depth);
+            my $imagePath = DocUtils->Path(fullpath => $latexFormula);
+            my $imageFile = DocUtils->Filename(fullpath => $latexFormula);
 
+            my $sourcePath = $args{html}->{docEnv}->{sourcePath};
+            my $relPath = DocUtils->RelativePath(currentPath => $sourcePath,
+                                      removeDestinationPrefix => $ENV{HTML_DIR},
+                                      destinationPath => $imagePath);
 
-        $args{html}->append(line => "\\(" . $self->{string}->{value} . "\\)");
+            my $html = "<img class=\"formula\"" .
+                            " style=\"padding:0px 4px;" .
+                            " vertical-align:baseline;" .
+                            " position:relative;" .
+                            " bottom: ${depth}px;\"" .
+                            " src=\"$relPath/$imageFile\"" .
+                            " alt=\"some latex code\">";
+            $args{html}->append(line => $html);
+        } else {
+            $args{html}->append(line => "\\(" .
+                                $self->{string}->{value} . "\\)");
+        }
     }
 
     if ($self->{lines}) {

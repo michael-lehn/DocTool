@@ -5,6 +5,7 @@ use Box;
 use Code;
 use File;
 use Latex;
+use Image;
 use Shell;
 
 BEGIN {
@@ -12,6 +13,7 @@ BEGIN {
                        qw(Code),
                        qw(File),
                        qw(Latex),
+                       qw(Image),
                        qw(Shell));
 
     our %Components;

@@ -26,7 +26,7 @@ sub new
                                      docEnv => $self->{docEnv});
     $self->{content} = Parse->new(linebuffer => $linebuffer);
 
-    $self->{options} = { class => "note", 
+    $self->{options} = { class => "note",
                          Options->Split(string => $self->{optionString})
                        };
     return $self;

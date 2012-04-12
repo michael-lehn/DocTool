@@ -90,7 +90,8 @@ sub Parse
 
     # second line has to be a sequence of $chars
     return undef
-        unless $args{linebuffer}->line(offset => 1) =~ /^(\s*)(${chars})(${chars}*)\s*$/;
+        unless $args{linebuffer}->line(offset => 1)
+               =~ /^(\s*)(${chars})(${chars}*)\s*$/;
 
     # indent length
     my $l = length($1);

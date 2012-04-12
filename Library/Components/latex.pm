@@ -74,24 +74,42 @@ sub html
     }
 
     if ($self->{lines}) {
-        my @code;
-        for my $line (@{$self->{lines}}) {
-            push(@code, "$line\n")
-        }
-        my $latexBlock = Convert->LatexBlock(codelinesRef => \@code);
-        my $imagePath = DocUtils->Path(fullpath => $latexBlock);
-        my $imageFile = DocUtils->Filename(fullpath => $latexBlock);
+        if ($DocTool::createLatexPics) {
+            my @code;
+            for my $line (@{$self->{lines}}) {
+                push(@code, "$line\n")
+            }
+            my $latexBlock = Convert->LatexBlock(codelinesRef => \@code);
+            my $imagePath = DocUtils->Path(fullpath => $latexBlock);
+            my $imageFile = DocUtils->Filename(fullpath => $latexBlock);
 
-        my $sourcePath = $args{html}->{docEnv}->{sourcePath};
-        my $relPath = DocUtils->RelativePath(currentPath => $sourcePath,
-                                             removeDestinationPrefix => $ENV{HTML_DIR},
-                                             destinationPath => $imagePath);
+            my $sourcePath = $args{html}->{docEnv}->{sourcePath};
+            my $relPath = DocUtils->RelativePath(currentPath => $sourcePath,
+                                     removeDestinationPrefix => $ENV{HTML_DIR},
+                                     destinationPath => $imagePath);
 
-        my $html = "<div class=\"centered latex_block\">"
+            my $html = "<div class=\"centered latex_block\">"
                  . "<img src=\"$relPath/$imageFile\" alt=\"some latex code\">"
                  . "</div>";
-        $args{html}->append(line => $html);
+            $args{html}->append(line => $html);
+        } else {
+            unshift(@{$self->{lines}}, "\\[");
+            push(@{$self->{lines}}, "\\]");
+            $args{html}->append(linesRef => $self->{lines});
+        }
     }
+}
+
+sub plain
+{
+    my $self = shift;
+    my %args = (@_);
+
+#
+#   TODO: If $DocTool::createLatexPic is set this is crap.  Further, it
+#         this method ignores $self->{lines}.
+#
+    return $self->{string}->{value};
 }
 
 1;

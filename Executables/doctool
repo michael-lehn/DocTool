@@ -150,11 +150,11 @@ foreach my $dir (@dirs) {
 }
 
 
-######
-##
-## Process all source files
-##
-######
+#######
+###
+### Process all source files
+###
+#######
 
 print STDERR "\n";
 print STDERR "[INFO] Scanning source files:\n";

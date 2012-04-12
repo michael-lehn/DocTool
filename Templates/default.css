@@ -124,6 +124,7 @@ tt  {
 }
 
 #footer {
+    float: left;
     width:90%;
     margin-left:1em;
     margin-right:1.5em;
@@ -393,7 +394,7 @@ div.theorem {
 }
 
 div.note {
-    background-color: #B4EEB4;
+    background-color: #B3CDE0;
 }
 
 div.warning {
@@ -598,6 +599,7 @@ a.nav {
 div.nav_tut_middle {
     float:left;
 
+    width:90%;
     padding-top:7px;
     padding-bottom:7px;
     padding-left:0px;

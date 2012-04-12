@@ -13,7 +13,7 @@
      extensions: ["tex2jax.js"],
      tex2jax: {
          inlineMath: [ ['$','$']/*, ["\\(","\\)"]*/ ],
-         displayMath: [ ['$$','$$']/*, ["\\[","\\]"]*/ ],
+         displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
          processEscapes: true
      },
      "HTML-CSS": { scale: 100 }

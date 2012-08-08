@@ -121,11 +121,9 @@ sub ResolveLink
 
                 $linkObject->{mark} = $args{mark};
                 if (defined $args{mark}) {
-                    print ">  $args{key} <-> $linkObject->{mark}\n";
                     $replace = '"' . $args{mark} . '"';
                     $linkObject->{mark} = $unresolved;
                     $linkObject->{mark} =~ s/^$args{key}$/$replace/ee;
-                    print ">> $linkObject->{mark}\n";
                 }
             }
 
@@ -151,6 +149,16 @@ sub SingleQuotes
 sub DoubleQuotes
 {
     return "_";
+}
+
+sub LeftQuote
+{
+    return undef;
+}
+
+sub RightQuote
+{
+    return undef;
 }
 
 ################################################################################

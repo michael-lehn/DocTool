@@ -86,8 +86,13 @@ sub Parse
             $args{linebuffer}->line(offset => 1) =~ /^\s{$l,$l}(.{$L,$L})(.*)$/;
 
     my ($title, $toc) = ($1, $2);
-    if ($toc =~ /\[TOC\]/) {
-        $toc = TOC->new(docEnv => $docEnv);
+    if ($toc =~ /\[TOC(:(\d+))?\]/) {
+        if ($2) {
+            $toc = TOC->new(docEnv => $docEnv,
+                            maxTocLevel => $2);
+        } else {
+            $toc = TOC->new(docEnv => $docEnv);
+        }
     } else {
         $toc = undef;
     }

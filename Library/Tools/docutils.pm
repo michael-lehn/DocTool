@@ -18,7 +18,17 @@ sub Mkdir
     my %args = (path => undef,
                 @_);
 
+    return if $args{path} eq "";
     system ("mkdir -p $args{path}");
+}
+
+sub Rm
+{
+    my $class = shift;
+    my %args = (file => undef,
+                @_);
+
+    system ("rm -f $args{file}");
 }
 
 sub Copy
@@ -264,24 +274,60 @@ sub Extension
     return $args{fullpath};
 }
 
+sub UpdateTimestamp
+{
+    my $class = shift;
+    my %args = (file   => undef,
+                @_);
+
+    unless (-e $args{file}) {
+        die;
+    }
+    die unless system("touch $args{file}")==0;
+}
+
+sub GetTimestamp
+{
+    my $class = shift;
+    my %args = (file => undef,
+                @_);
+
+    die unless ($args{file});
+
+    return (stat "$args{file}")[9];
+}
+
 sub IsNewerThan
 {
     my $class = shift;
     my %args = (file1 => undef,
                 file2 => undef,
+                time2 => undef,
                 @_);
 
-    unless (-e $args{file2}) {
-        return 1;
-    }
+    die unless ($args{file1});
 
-    my $time1 = (stat "$args{file1}")[9];
-    my $time2 = (stat "$args{file2}")[9];
+    if ($args{file2}) {
+        unless (-e $args{file2}) {
+            return 1;
+        }
 
-    if ($time1 > $time2) {
-        return 1;
+        my $time1 = (stat "$args{file1}")[9];
+        my $time2 = (stat "$args{file2}")[9];
+
+        if ($time1 > $time2) {
+            return 1;
+        }
+        return undef;
+    } elsif ($args{time2}) {
+        my $time1 = (stat "$args{file1}")[9];
+
+        if ($time1 > $args{time2}) {
+            return 1;
+        }
+        return undef;
     }
-    return undef;
+    die;
 }
 
 sub FindFiles
@@ -513,7 +559,7 @@ sub EvalConfigFile
         $line =~ s/[^\\]#.*//;
         $line =~ s/^#.*//;
 
-        if ($line =~ /\s*(\S*)=(.*)$/) {
+        if ($line =~ /\s*([^\s=]*)=(.*)$/) {
             $var{$1} = DocUtils->ReplaceShellVars(line => $2,
                                                   varsRef => $args{varsRef});
             # export the variable with its expanded value
@@ -548,7 +594,12 @@ sub ReplaceShellVars
 
         my $value = $VARS{$var};
         $value = $default unless $value;
-        $args{line} =~ s/\$\{$var:-$default\}/$value/g;
+
+        #$args{line} =~ s/\$\{$var:-$default\}/$value/g;
+        my $replace = "\$\{$var:-$default\}";
+        my $pos = index($args{line}, $replace);
+        #print "Replace '$replace'  in '$args{line}' with '$value'\n";
+        substr($args{line}, $pos, length($replace), $value);
     }
     while ($args{line} =~ /`([^`]*)`/) {
         my $cmd = FileHandle->new("$1 |");

@@ -1,4 +1,5 @@
 #! /usr/bin/perl -w
+use strict;
 
 BEGIN {
     unless ($ENV{DOCTOOL}) {
@@ -18,6 +19,7 @@ BEGIN {
 use DocUtils;
 
 BEGIN {
+
     DocUtils->EvalConfigFile(file => "doctool.preconfig");
     DocUtils->EvalConfigFile(file => "$ENV{DOCTOOL}/Configuration/doctool.config");
     DocUtils->EvalConfigFile(file => "doctool.postconfig");
@@ -28,7 +30,8 @@ use Filetree;
 use Linebuffer;
 use Parse;
 use Html;
-
+use CxxCrossRef;
+use CxxIndex;
 
 ######
 ##
@@ -36,45 +39,227 @@ use Html;
 ##
 ######
 
+my $DocTool__convertSourcefiles;
+my $DocTool__createCrossReferences;
+my $DocTool__force;
+my $DocTool__parseOnly;
+my $DocTool__updateCxxIndex;
+my $DocTool__createLatexPics;
+my $DocTool__cxxIndexOnly;
+
 for (my $i=0; $i<=$#ARGV; ++$i) {
     if ($ARGV[$i] eq "--convertSourcefiles") {
-        $DocTool::convertSourcefiles = 1;
+        $DocTool__convertSourcefiles = 1;
+        next;
+    }
+    if ($ARGV[$i] eq "--createCrossReferences") {
+        $DocTool__createCrossReferences = 1;
+        next;
+    }
+    if ($ARGV[$i] eq "--force") {
+        $DocTool__force = 1;
+        next;
+    }
+    if ($ARGV[$i] eq "--parseOnly") {
+        $DocTool__parseOnly = 1;
+        next;
+    }
+    if ($ARGV[$i] eq "--cxxIndexOnly") {
+        $DocTool__cxxIndexOnly = 1;
         next;
     }
     if ($ARGV[$i] eq "--createLatexPics") {
-        $DocTool::createLatexPics = 1;
+        $DocTool__createLatexPics = 1;
         next;
     }
-    print STDERR "[ERROR] Unknown commanline argument \"$ARGV[$i]\"\n";
-    print STDERR "\n\nusage: $0 [--convertSourcefiles --createLatexPics]\n\n\n";
-    die;
+    if ($ARGV[$i] ne "--help") {
+        print STDERR "[ERROR] Unknown commanline argument \"$ARGV[$i]\"\n";
+    }
+    print STDERR "\n\nusage: $0 [ " .
+                 "--convertSourcefiles " .
+                 "--createCrossReferences " .
+                 "--force " .
+                 "--parseOnly " .
+                 "--cxxIndexOnly " .
+                 "--createLatexPics " .
+                 "]\n\n\n";
+    exit;
 }
 
 
 ######
 ##
-## Copy CSS file to website
+## Copy CSS file to website.
 ##
 ######
 
 DocUtils->Install(file => $ENV{DEFAULT_CSS},
                   to => $ENV{HTML_DIR});
 
+######
+##
+## Copy JavaScript tools to website.
+##
+######
+
+DocUtils->Install(file => $ENV{JS_CENTERWINDOW}, to => $ENV{HTML_DIR});
+DocUtils->Install(file => $ENV{JS_FOLLOWSCROLL}, to => $ENV{HTML_DIR});
+DocUtils->Install(file => $ENV{JS_TOOLTIP}, to => $ENV{HTML_DIR});
+
+
+#######
+###
+### Update CxxIndex, CrossRefs, ...
+###
+#######
+
+my %cxxfileExt = (h   => 1,
+                  tcc => 1,
+                  cc  => 1,
+                  cxx => 1);
+
+my @headerfile;
+my %headerfileExt = (h => 1);
+foreach my $ext (keys %headerfileExt) {
+    push(@headerfile, DocUtils->FindFiles(path => $ENV{DOCSRC_DIR},
+                                          pattern => '.*\.' . $ext . "\$"));
+}
+
+print STDERR "\n";
+print STDERR "[INFO] Updating CxxIndex database:\n";
+
+for my $headerfile (sort @headerfile) {
+    my $isUpToDate = CxxIndex->IsUpToDate(file => $headerfile);
+    if (!$isUpToDate || $DocTool__force) {
+        printf STDERR "[INFO] Processing '$headerfile'\n";
+        CxxIndex->UpdateDB(headerfile => $headerfile);
+        CxxIndex->Touch(file => $headerfile);
+    }
+}
+print STDERR "[INFO] done.\n";
+
+print STDERR "\n";
+print STDERR "[INFO] Updating CODEREF blocks in doc files:\n";
+
+my %obsolete;
+for my $headerfile (sort @headerfile) {
+    my $obsolete = CxxIndex->UpdateCodeRefStubs(headerfile => $headerfile);
+    if (scalar(keys %{$obsolete})) {
+        $obsolete{$headerfile} = $obsolete;
+    }
+}
+if (scalar(keys %obsolete)) {
+    printf STDERR "\n\n";
+    printf STDERR "[ERROR] Fix the following obsolete CODEREFs:\n";
+    foreach my $file (keys %obsolete) {
+        my $docfile = $file;
+        if ($docfile =~ /^(.*)\./) {
+            $docfile = "${1}.doc";
+        }
+
+        printf STDERR "[ERROR] In '$docfile':\n";
+        foreach my $line (sort {$a <=> $b} keys %{$obsolete{$file}}) {
+            my $str = sprintf("%5d", $line);
+            printf STDERR "[ERROR]    Line $str:  " .
+                          "Id=$obsolete{$file}->{$line}\n";
+        }
+    }
+    printf STDERR "\n";
+    die;
+}
+print STDERR "[INFO] done.\n";
+
+if ($DocTool__cxxIndexOnly) {
+    exit;
+}
+
 
 ######
 ##
-## Parse all doc files
+## Create all file trees
 ##
 ######
 
-my @docfiles = DocUtils->FindFiles(path => $ENV{DOCSRC_DIR},
-                                      pattern => '.*\.doc');
+my @docfile = DocUtils->FindFiles(path => $ENV{DOCSRC_DIR},
+                                  pattern => '.*\.doc');
 
-my @adtItems;
+my @sourcefile;
+my %sourcefileExt = (cxx => 1,
+                     tcc => 1,
+                     cc  => 1,
+                     hpp => 1,
+                     f   => 1);
+foreach my $ext (keys %sourcefileExt) {
+    push(@sourcefile, DocUtils->FindFiles(path => $ENV{DOCSRC_DIR},
+                                          pattern => '.*\.' . $ext . "\$"));
+}
+
+my @file = (@headerfile, @sourcefile, @docfile);
+my @dir = DocUtils->ExtractDirectories(files => \@file,
+                                       allParentDirectories => 1);
+
+@file = Filetree->CompressFileList(\@file);
+
+my @filetreeItem;
+
+print STDERR "\n";
+print STDERR "[INFO] Creating filetrees:\n";
+
+foreach my $dir (@dir) {
+    print STDERR "[INFO] Creating filetree for \"$dir/\"\n";
+
+    my $docEnv = DocEnv->new(sourceFile => join("/", $dir, "dir.html"));
+
+    # set default document id
+    my $dirId = "dir:$dir/";
+    print STDERR "[INFO]  ... DocId will be \"$dirId\"\n";
+    Link->AddDocumentId(documentId => $dirId, docEnv => $docEnv);
+
+    my $filetree = Filetree->new(directory   => $dir,
+                                 allFiles    => \@file);
+
+    push(@filetreeItem, [$filetree, $docEnv]);
+
+    print STDERR "[INFO]  ... done.\n";
+}
+
+#######
+###
+### Process all source files: Create Doc Ids
+###
+#######
+
+print STDERR "\n";
+print STDERR "[INFO] Scanning source files:\n";
+
+for my $sourcefile (sort @sourcefile, @headerfile) {
+    print STDERR "[INFO] Processing source file $sourcefile ...\n";
+
+    my $path     = DocUtils->Path(fullpath => $sourcefile);
+    my $filename = DocUtils->Filename(fullpath => $sourcefile);
+    my $ext      = DocUtils->Extension(fullpath => $sourcefile);
+
+    my $docEnv = DocEnv->new(sourceFile => $sourcefile,
+                             keepExtension => 1);
+
+    my $docId = "file:$sourcefile";
+    print STDERR "[INFO]  ... DocId will be \"$docId\"\n";
+    Link->AddDocumentId(docEnv => $docEnv, documentId => $docId);
+
+    print STDERR "[INFO]  ... done.\n";
+}
+
+######
+##
+## Parse all doc files.
+##
+######
+
+my @adtItem;
 
 print STDERR "\n";
 print STDERR "[INFO] Parsing documents:\n";
-foreach my $docfile (@docfiles) {
+foreach my $docfile (@docfile) {
     print STDERR "[INFO] doc file \"$docfile\" will be parsed\n";
 
     my $docEnv = DocEnv->new(sourceFile => $docfile);
@@ -98,122 +283,43 @@ foreach my $docfile (@docfiles) {
     # parse document
     my $linebuffer = Linebuffer->new(docEnv => $docEnv);
     my $adt = Parse->new(linebuffer => $linebuffer);
-    push(@adtItems, [$adt, $docEnv]);
+    push(@adtItem, [$adt, $docEnv]);
 
     # check for unresolved links
-    Link->DumpUnresolvedLinks();
+    die unless Link->DumpUnresolvedLinks();
 
     print STDERR "[INFO]  ... done.\n";
+}
+
+if ($DocTool__parseOnly) {
+    exit;
 }
 
 
 ######
 ##
-## Create all file trees
-##
-######
-
-my @sourcefiles;
-my @sourcefileExt = ("cxx", "h", "tcc", "cc", "f");
-foreach my $ext (@sourcefileExt) {
-    push(@sourcefiles, DocUtils->FindFiles(path => $ENV{DOCSRC_DIR},
-                                           pattern => '.*\.' . $ext . "\$"));
-}
-
-my @allFiles = (@sourcefiles, @docfiles);
-my @dirs = DocUtils->ExtractDirectories(files => \@allFiles,
-                                        allParentDirectories => 1);
-
-@allFiles = Filetree->CompressFileList(\@allFiles);
-
-my @filetreeItems;
-
-print STDERR "\n";
-print STDERR "[INFO] Creating filetrees:\n";
-
-foreach my $dir (@dirs) {
-    print STDERR "[INFO] Creating filetree for \"$dir/\"\n";
-
-    my $docEnv = DocEnv->new(sourceFile => join("/", $dir, "dir.html"));
-
-    # set default document id
-    my $dirId = "dir:$dir/";
-    print STDERR "[INFO]  ... DocId will be \"$dirId\"\n";
-    Link->AddDocumentId(documentId => $dirId, docEnv => $docEnv);
-
-    my $filetree = Filetree->new(directory   => $dir,
-                                 allFiles    => \@allFiles);
-
-    push(@filetreeItems, [$filetree, $docEnv]);
-
-    print STDERR "[INFO]  ... done.\n";
-}
-
-
-#######
-###
-### Process all source files
-###
-#######
-
-print STDERR "\n";
-print STDERR "[INFO] Scanning source files:\n";
-
-for my $sourcefile (sort @sourcefiles) {
-    print STDERR "[INFO] Processing source file $sourcefile ...\n";
-
-    my $path     = DocUtils->Path(fullpath => $sourcefile);
-    my $filename = DocUtils->Filename(fullpath => $sourcefile);
-    my $ext      = DocUtils->Extension(fullpath => $sourcefile);
-
-    my $docEnv = DocEnv->new(sourceFile => $sourcefile,
-                             keepExtension => 1);
-
-    my $docId = "file:$sourcefile";
-    print STDERR "[INFO]  ... DocId will be \"$docId\"\n";
-    Link->AddDocumentId(docEnv => $docEnv, documentId => $docId);
-
-    if ($DocTool::convertSourcefiles) {
-        $docEnv->{vars}->{TITLE} = "$filename ($sourcefile)";
-        $docEnv->{vars}->{HOME} = Html->MakeLink(fromDocEnv => $docEnv,
-                                                 toDocEnv => "doc:index");
-
-        my $currentPath = $docEnv->{sourcePath};
-        my $filetreeLink = Html->MakeLink(fromDocEnv => $docEnv,
-                                          toDocEnv => "dir:$currentPath/");
-        $docEnv->{vars}->{FILETREE} = $filetreeLink;
-
-        my @lines;
-        $docEnv->{sourceFilename} = undef;
-        push(@lines, $docEnv->filter(file => $ENV{SOURCEFILE_HEADER}));
-
-        my @source = DocUtils->LoadLinebuffer(prefix => $path,
-                                              file => $filename,
-                                              removeNewlines => 1);
-        push(@lines, Convert->CodeBlock(codelinesRef => \@source,
-                                        fileExtension => $ext));
-        push(@lines, $docEnv->filter(file => $ENV{SOURCEFILE_FOOTER}));
-        DocUtils->SaveLinebuffer(file => $docEnv->{outputFile},
-                                 linesRef => \@lines);
-    }
-    print STDERR "[INFO]  ... done.\n";
-}
-
-######
-##
-## Format all doc files
+## Format all doc files.
 ##
 ######
 
 print STDERR "\n";
 print STDERR "[INFO] Formatting parsed documents:\n";
 
-for my $adtItem (@adtItems) {
+for my $adtItem (@adtItem) {
     my $adt = $adtItem->[0];
     my $docEnv = $adtItem->[1];
 
+    unless ($DocTool__force) {
+        unless (DocUtils->IsNewerThan(file1 => $docEnv->{sourceFile},
+                                      file2 => $docEnv->{outputFile}))
+        {
+            printf STDERR "[INFO] \"$docEnv->{sourceFile}\" is up-to-date.\n";
+            next;
+        }
+    }
+
     print STDERR "[INFO] parsed source file \"$docEnv->{sourceFile}\"".
-                 "will be formatted\n";
+                 " will be formatted\n";
     print STDERR "[INFO]  ... output file \"$docEnv->{outputFilename}\"";
     print STDERR " will be installed in \"$docEnv->{outputPath}\".\n";
 
@@ -249,15 +355,15 @@ for my $adtItem (@adtItems) {
                                ")";
     $docEnv->{vars}->{FILETREE} = $filetreeLink;
 
-    my @lines;
+    my @line;
     my @content = $html->content();
 
-    push(@lines, $docEnv->filter(file => $ENV{SLIDE_HEADER}),
-                 @content,
-                 $docEnv->filter(file => $ENV{SLIDE_FOOTER}));
+    push(@line, $docEnv->filter(file => $ENV{SLIDE_HEADER}),
+                @content,
+                $docEnv->filter(file => $ENV{SLIDE_FOOTER}));
 
     DocUtils->SaveLinebuffer(file => $docEnv->{outputFile},
-                             linesRef => \@lines);
+                             linesRef => \@line);
 
     DocUtils->Install(file => $docEnv->{sourceFile},
                       to => $docEnv->{outputPath},
@@ -266,17 +372,16 @@ for my $adtItem (@adtItems) {
     print STDERR "[INFO]  ... done.\n";
 }
 
-
 ######
 ##
-## Format all filetrees
+## Format all filetrees.
 ##
 ######
 
 print STDERR "\n";
 print STDERR "[INFO] Formatting filetrees:\n";
 
-foreach my $item (@filetreeItems) {
+foreach my $item (@filetreeItem) {
     my $filetree = $item->[0];
     my $docEnv   = $item->[1];
 
@@ -286,7 +391,7 @@ foreach my $item (@filetreeItems) {
 
     my $html = Html->new(adt => $filetree, docEnv => $docEnv);
 
-    my @lines;
+    my @line;
     $docEnv->{sourceFilename} = undef;
 
     $docEnv->{vars}->{HOME} = Html->MakeLink(fromDocEnv => $docEnv,
@@ -299,12 +404,98 @@ foreach my $item (@filetreeItems) {
     $docEnv->{vars}->{FILETREE_CURRENTPATH} = $ENV{DOC_PROJECT} .
                                               ": " . $link;
 
-    push(@lines, $docEnv->filter(file => $ENV{FILETREE_HEADER}),
-                 $html->content(),
-                 $docEnv->filter(file => $ENV{FILETREE_FOOTER}));
+    push(@line, $docEnv->filter(file => $ENV{FILETREE_HEADER}),
+                $html->content(),
+                $docEnv->filter(file => $ENV{FILETREE_FOOTER}));
 
     DocUtils->SaveLinebuffer(file => $docEnv->{outputFile},
-                             linesRef => \@lines);
+                             linesRef => \@line);
 
-   print STDERR "[INFO]  ... done.\n";
+    print STDERR "[INFO]  ... done.\n";
 }
+
+#######
+###
+### Format all source files
+###
+#######
+
+if ($DocTool__convertSourcefiles || $DocTool__force) {
+    print STDERR "\n";
+    print STDERR "[INFO] Converting source and header files:\n";
+
+    if ($DocTool__createCrossReferences || $DocTool__force) {
+        CxxCrossRef->ResetAll();
+        my @allfiles;
+        foreach my $ext ("cxx", "cc") {
+            push(@allfiles, DocUtils->FindFiles(path => $ENV{DOCSRC_DIR},
+                                                pattern => '.*\.'.$ext."\$"));
+        }
+
+        for my $file (@allfiles) {
+            printf STDERR "[INFO] Extracting cross references from '$file'.\n";
+            CxxCrossRef->UpdateDB(file => $file);
+        }
+    }
+
+    for my $sourcefile (sort @headerfile, @sourcefile) {
+        print STDERR "[INFO] Processing file $sourcefile ...\n";
+
+        my $path     = DocUtils->Path(fullpath => $sourcefile);
+        my $filename = DocUtils->Filename(fullpath => $sourcefile);
+        my $ext      = DocUtils->Extension(fullpath => $sourcefile);
+
+        my $docEnv = DocEnv->new(sourceFile => $sourcefile,
+                                 keepExtension => 1);
+
+        my $docId = "file:$sourcefile";
+        print STDERR "[INFO]  ... DocId will be \"$docId\"\n";
+        Link->AddDocumentId(docEnv => $docEnv, documentId => $docId);
+
+        $docEnv->{vars}->{TITLE} = "$filename ($sourcefile)";
+        $docEnv->{vars}->{HOME} = Html->MakeLink(fromDocEnv => $docEnv,
+                                                 toDocEnv => "doc:index");
+
+        my $currentPath = $docEnv->{sourcePath};
+        my $filetreeLink = Html->MakeLink(fromDocEnv => $docEnv,
+                                          toDocEnv => "dir:$currentPath/");
+        $docEnv->{vars}->{FILETREE} = $filetreeLink;
+
+        my @line;
+        $docEnv->{sourceFilename} = undef;
+        push(@line, $docEnv->filter(file => $ENV{SOURCEFILE_HEADER}));
+
+        my @source = DocUtils->LoadLinebuffer(prefix => $path,
+                                              file => $filename,
+                                              removeNewlines => 1);
+
+        my $cxxIndex = undef;
+        if ($headerfileExt{$ext}) {
+            $cxxIndex = CxxIndex->GetHeaderIndex(file => $sourcefile);
+        } elsif ($sourcefileExt{$ext}) {
+            # $cxxIndex = CxxIndex->GetSourceIndex(file => $sourcefile);
+        }
+
+        my $cxxCrossRef = CxxCrossRef->GetCrossRef(file => $sourcefile);
+
+        push(@line, Convert->CodeBlock(codelinesRef  => \@source,
+                                       fileExtension => $ext,
+                                       cxxIndex      => $cxxIndex,
+                                       cxxCrossRef   => $cxxCrossRef,
+                                       docEnv        => $docEnv));
+
+
+#
+#       Add some empty lines ...
+#
+        push(@line, "<p>" . "<br>" x 100 . "</p>");
+        push(@line, "\n");
+
+        push(@line, $docEnv->filter(file => $ENV{SOURCEFILE_FOOTER}));
+        DocUtils->SaveLinebuffer(file => $docEnv->{outputFile},
+                                 linesRef => \@line);
+    }
+    print STDERR "[INFO]  ... done.\n";
+}
+
+

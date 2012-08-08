@@ -13,6 +13,16 @@ sub DoubleQuotes
     return undef;
 }
 
+sub LeftQuote
+{
+    return undef;
+}
+
+sub RightQuote
+{
+    return undef;
+}
+
 sub Keyword
 {
     return "LATEX";

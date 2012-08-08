@@ -15,7 +15,7 @@ body {
     line-height: 1.333em;
     font-weight: normal;
     font-variant: normal;
-    line-height:1.4em;
+    line-height:1.8em;
     margin-left:0.2cm;
     margin-right:0.2cm;
 }
@@ -54,6 +54,7 @@ h1.doc  {
     margin-top: 1em;
     margin-bottom: 25px;
     font-family: arial, sans-serif;
+    line-height:1.2em;
 /*
     font: bold 30px 'Lucida Grande', Geneva, Helvetica, Arial, sans-serif;
 */
@@ -114,12 +115,8 @@ h4.doc  {
 }
 
 tt  {
-/*
-    font-family:  Courier, monospace, 'Andale Mono', Monaco, Consolas;
-*/
-/*
-    font-size: 18px;
-*/
+    font-family:  Monaco, Courier, monospace, 'Andale Mono', Monaco, Consolas;
+    font-size: inherit;
     color: #093DA0;
 }
 
@@ -157,6 +154,12 @@ a {
 a:hover {
     text-decoration: none;
     color: #093DA0;
+}
+
+/* footnote */
+
+li.footnote {
+    list-style-type: none;
 }
 
 /* TOC */
@@ -269,6 +272,45 @@ td.header {
 */
 }
 
+p {
+    margin: 0px;
+    padding: 0px;
+}
+
+table.paramlist {
+    border-collapse: separate;
+    border-spacing: 0px;
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+
+    margin:0px;
+    border-spacing:10px;
+    width: 100%;
+}
+
+tr.paramlist {
+    padding:0px;
+    margin:0px;
+    border-spacing:0px;
+}
+
+td.paramlist_key {
+    border: outset 0pt;
+    padding: 0px;
+
+    text-align: left;
+    vertical-align: top;
+    font-weight:bold;
+}
+
+td.paramlist_value {
+    border: outset 0pt;
+    padding: 0px;
+
+    width: 92%;
+}
+
 /* Test-Table */
 table.default {
     border-left: solid 0px;
@@ -331,6 +373,104 @@ li.enumerate_item {
     margin-bottom:2px;
 }
 
+/* Coderef */
+
+a.coderef {
+    display:            block;
+    text-decoration:    none;
+    color:              inherit;
+}
+
+div.coderef {
+    border: 1px solid #969696;
+    -moz-border-radius:5px;
+    -khtml-border-radius:5px;
+    border-radius:5px;
+    background-color: #F6F6F6;
+/*    font: 16px 'Andale Mono'; */
+/*
+    font: 14px;
+*/
+
+    padding: 2px;
+    margin:0px;
+}
+
+div.coderef:hover {
+    border: 3px solid #969696;
+    padding: 0px;
+}
+
+div.coderef_outer {
+    border: 0px;
+/*    font: 16px 'Andale Mono'; */
+/*
+    font: 14px;
+*/
+
+    padding: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom:15px;
+    margin-top:0px;
+}
+
+div.code_description {
+    padding-top: 5px;
+    padding-left: 10px;
+    padding-bottom: 5px;
+}
+
+/* Code Title */
+
+div.code_title {
+    margin-bottom:10px;
+    margin-top:0px;
+    padding-top:6px;
+    padding-bottom:6px;
+    padding-left:10px;
+    padding-right:10px;
+
+/*
+    font-weight:bold;
+*/
+/*    text-align: center; */
+    border-bottom: 1px solid #8E8E8E;
+}
+
+/* docref */
+
+a.docref {
+    text-decoration: none;
+    color: inherit;
+    background-color: inherit;
+    border-bottom: 1px dotted #8E8E8E;
+}
+
+a.docref:hover {
+    text-decoration: none;
+    color: inherit;
+    background-color: inherit;
+    border-bottom: 0px;
+}
+
+span.docref {
+    color: #F0F0F0;
+}
+
+span.docref:hover {
+    color: #8E8E8E;
+}
+
+span.docrefcomment {
+    color: inherit;
+}
+
+a.docrefcomment {
+    color: inherit;
+    text-decoration: none;
+}
+
 /* Code */
 
 div.code {
@@ -375,6 +515,7 @@ div.code_content {
     padding-bottom:5px;
     padding-left:10px;
     padding-right:10px;
+    line-height:1.4em;
 }
 
 a.code {
@@ -588,6 +729,63 @@ div.sourcefile {
     font-size:14px;
 */
 }
+
+/* code link */
+
+a.codelink {
+    text-decoration: none;
+    border-bottom:1px dotted;
+    color: inherit;
+}
+
+a.codelink:hover {
+    text-decoration: none;
+    border-bottom:0px;
+    color: inherit;
+}
+
+table.codelink_listitem {
+    width : 100%;
+}
+
+tr.codelink_listitem {
+    width : 100%;
+}
+
+td.codelink_listitem {
+    width : 100%;
+    font-family:monospace;
+    font-size:14px;
+}
+
+td.codelink_listitem:hover {
+    background-color: #969696;
+}
+
+td.codelink_listitem_external {
+    width : 100%;
+    font-family:monospace;
+    font-size:14px;
+    color: #969696;
+}
+
+a.codelink_listitem {
+    text-decoration: none;
+}
+
+span.codelink_listitem {
+    text-decoration: none;
+    border-bottom:1px dotted;
+    border-color: red;
+    color: inherit;
+}
+
+span.codelink_listitem:hover {
+    text-decoration: none;
+    border-bottom:0px;
+    color: inherit;
+}
+
 
 /* Browse files */
 

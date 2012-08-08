@@ -50,7 +50,13 @@ sub Parse
     while (! $args{linebuffer}->end()) {
         last unless $args{linebuffer}->line() =~ /^\s{$l,$l}(\S.*)$/;
 
-        $string = $string . " " . $1;
+        my $line = $1;
+#
+#       Hack: Stop if this is the start of a new ParamList
+#
+        last if $line =~ /\s{4,}\S/;
+
+        $string = $string . " " . $line;
 
         if ($string =~ s/\s\+\s*$//) {
             my $s = String->new(value => $string,

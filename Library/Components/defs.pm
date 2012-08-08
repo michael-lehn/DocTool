@@ -68,16 +68,52 @@ sub LINKS
 
     for my $defValue (@defValue) {
         die "[ERROR] Unable to parse \"$defValue\""
-            unless $defValue =~ /^\s*?__(.*)__\s*->\s*(\S.*?)(#(\S.*))?\s*$/;
+            unless $defValue =~ /^\s*(\S.*\S)\s*->\s*(\S.*?)(#(\S.*))?\s*$/;
+
+        my $key   = $1;
+        my $value = $2;
+        my $mark  = $4;
+
+        if ($key =~ /__(.*)__/) {
+            $key = $1;
+        }
+
+        unless ((defined $key) && (defined $value)) {
+            die "[ERROR] Unable to parse \"$defValue\"";
+        }
+
+        Link->ResolveLink(key         => $key,
+                          destination => $value,
+                          mark        => $mark);
+    }
+    return Link->DumpUnresolvedLinks(docEnv => $docEnv);
+}
+
+sub FOOTNOTES
+{
+    my ($class, $docEnv, @defValue) = @_;
+
+    my @defList;
+
+    for my $defValue (@defValue) {
+        die "[ERROR] Unable to parse \"$defValue\""
+            unless $defValue =~ /^\s*?\[(.*)\]\s+(.*)$/;
 
         unless ((defined $1) && (defined $2)) {
             die "[ERROR] Unable to parse \"$defValue\"";
         }
 
-        Link->ResolveLink(key => $1, destination => $2, mark => $4);
+        my $key = $1;
+        my $value = String->new(value => $2, docEnv => $docEnv);
+        $value = String->Parse(string => $value);
+
+        push(@defList, {key => $key, value => $value});
     }
-    return Link->DumpUnresolvedLinks(docEnv => $docEnv);
+
+    return Footnote->new(isDefinitionList => 1,
+                         definitionList   => \@defList);
 }
+
 
 sub TOCLEVEL
 {
@@ -160,9 +196,19 @@ sub Parse
     my @defValue = ($3);
 
     while (! $args{linebuffer}->end()) {
-        last unless $args{linebuffer}->line() =~ /^\s{$l,$l}(\S.*)$/;
+        last unless $args{linebuffer}->line() =~ /^(\s{$l,})(\S.*)$/;
 
-        push(@defValue, $1);
+        if (length($1)>$l) {
+            my $line = $2;
+            if ($defValue[-1] =~ /^(.*)\+\+\+\s*$/) {
+                $defValue[-1] = $1 . $line;
+            } else {
+                $defValue[-1] = $defValue[-1] . " " . $line;
+            }
+        } else {
+            push(@defValue, $2);
+        }
+
         $args{linebuffer}->moveLineCursor(offset => 1);
     }
 

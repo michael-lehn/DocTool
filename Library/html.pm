@@ -144,7 +144,9 @@ sub MakeLink
         }
         return $args{toDocEnv};
     } else {
-        $args{toDocEnv} = Link->LookUpDocumentId(documentId => $args{toDocEnv});
+        my $docId = $args{toDocEnv};
+        $docId = _getDocId($docId);
+        $args{toDocEnv} = Link->LookUpDocumentId(documentId => $docId);
     }
 
     my $currentPath = $args{fromDocEnv}->{outputPath};
@@ -161,5 +163,26 @@ sub MakeLink
     }
     return "$relPath";
 }
+
+#
+#   _getDocId(x)
+#
+#   If x is a string returns x
+#   If x is a docEnv object returns a string representation
+#
+sub _getDocId
+{
+    my $id = shift;
+
+    if(ref($id) eq "DocEnv") {
+        $id = $id->{sourceFile};
+        if ($id =~ /^(.*)\.doc$/) {
+            return "doc:$1";
+        }
+        return "file:$id";
+    }
+    return $id;
+}
+
 
 1;

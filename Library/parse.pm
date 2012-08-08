@@ -6,6 +6,7 @@ use BlockBox;
 use Comment;
 use Defs;
 use List;
+use ParamList;
 use Paragraph;
 use Section;
 use String;
@@ -48,6 +49,7 @@ sub run
                       qw(Block),
                       qw(BlockBox),
                       qw(Defs),
+                      qw(ParamList),
                       qw(Paragraph));
 
     while (! $self->{linebuffer}->end()) {

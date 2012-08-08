@@ -30,7 +30,7 @@ sub new
     # remove empty lines
     # concat lines that end on "+++"
     my @lines;
-    for (my $i=0; $i<$#{$self->{lines}}; ++$i) {
+    for (my $i=0; $i<=$#{$self->{lines}}; ++$i) {
         my $line = $self->{lines}->[$i];
         chomp($line);
 
@@ -47,6 +47,7 @@ sub new
         }
     }
     $self->{lines} = \@lines;
+
     return $self;
 }
 

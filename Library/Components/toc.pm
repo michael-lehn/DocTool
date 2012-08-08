@@ -27,7 +27,7 @@ sub AddSection
             push(@{$toc->{counter}}, 1);
         }
     } else {
-        ++${$toc->{counter}}[$args{sectionType}];            
+        ++${$toc->{counter}}[$args{sectionType}];
     }
     while ($args{sectionType}+1 < scalar(@{$toc->{counter}})) {
         pop(@{$toc->{counter}});

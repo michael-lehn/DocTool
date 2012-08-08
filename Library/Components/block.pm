@@ -3,6 +3,7 @@ use strict;
 use Function;
 use Box;
 use Code;
+use CodeRef;
 use File;
 use Latex;
 use Image;
@@ -11,6 +12,7 @@ use Shell;
 BEGIN {
     our @Components = (qw(Box),
                        qw(Code),
+                       qw(CodeRef),
                        qw(File),
                        qw(Latex),
                        qw(Image),
@@ -23,6 +25,11 @@ BEGIN {
         $Block::Components{$keyword} = $component;
     }
 }
+
+#
+#   Look for lines like  "___ CODE ___" which are usually created by :import:
+#
+
 
 sub Parse
 {

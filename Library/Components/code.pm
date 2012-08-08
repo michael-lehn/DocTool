@@ -85,9 +85,10 @@ sub convert
         $args{html}->addLine(line => "<a class=\"code\" href=\"$relPath\">");
         $args{html}->addLine(line => "$file\n");
         $args{html}->addLine(line => "</a>\n");
-        $args{html}->addLine(line => "</div>\n");
+        $args{html}->addLine(line => "</div><!-- Blub -->\n");
     }
     $args{html}->addLine(linesRef => \@codelines);
+    $args{html}->addLine(line => "</div><!-- code -->\n");
 }
 
 # sub convert

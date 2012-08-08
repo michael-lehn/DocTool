@@ -18,6 +18,16 @@ sub DoubleQuotes
     return join("", keys %Emphasize::DoubleQuotes);
 }
 
+sub LeftQuote
+{
+    return undef;
+}
+
+sub RightQuote
+{
+    return undef;
+}
+
 sub new
 {
     my $proto = shift;

@@ -3,6 +3,7 @@ use strict;
 use Function;
 use Box;
 use Code;
+use CodeRef;
 use File;
 use Latex;
 use Shell;
@@ -10,14 +11,15 @@ use Shell;
 BEGIN {
     our @Components = (qw(Box),
                        qw(Code),
+                       qw(CodeRef),
                        qw(Latex),
                        qw(Shell));
 
     our %Components;
 
-    for my $component (@Block::Components) {
+    for my $component (@BlockBox::Components) {
         my $keyword = $component->Keyword();
-        $Block::Components{$keyword} = $component;
+        $BlockBox::Components{$keyword} = $component;
     }
 }
 
@@ -64,10 +66,71 @@ sub Parse
               ": BlockBox not terminated correctly\n";
         die;
     }
-    shift(@lines);
-    return $Block::Components{$keyword}->new(lines => [ @lines ],
+
+#
+#   Remove first or last line if they are empty
+#
+    if ($lines[0] =~ /^\s*$/) {
+        shift(@lines);
+    }
+    if ($lines[-1] =~ /^\s*$/) {
+        pop(@lines);
+    }
+
+    unless ($BlockBox::Components{$keyword}) {
+        die "Undefined component '$keyword'\n\n";
+    }
+
+
+#
+#   Look for additional option
+#
+    my $moreOptions = undef;
+    while (! $args{linebuffer}->end()) {
+        if ($args{linebuffer}->line() =~ /^\s{$l,}\[(.+)\]\s*$/) {
+            $moreOptions .= $1;
+            $args{linebuffer}->moveLineCursor(offset => 1);
+        } else {
+            last;
+        }
+    }
+    if ($moreOptions) {
+        $moreOptions =~ s/\s*$//;
+        if ($optionString) {
+            $optionString = join(";", ($optionString, $moreOptions));
+        } else {
+            $optionString = $moreOptions;
+        }
+    }
+
+#
+#   Look for additional description.  These have an additional ident of at
+#   least 3 spaces.
+#
+    my $L = $l + 3;
+    my @description = ();
+
+    while (! $args{linebuffer}->end()) {
+        if ($args{linebuffer}->line() =~ /^(\s*)\S/) {
+            last if (length($1)<$L);
+        }
+        push(@description, $args{linebuffer}->line());
+        $args{linebuffer}->moveLineCursor(offset => 1);
+    }
+
+
+    my $linebuffer = Linebuffer->new(buffer => \@description,
+                                     docEnv => $args{linebuffer}->{docEnv});
+    my $description = Parse->new(linebuffer => $linebuffer);
+    while (! $linebuffer->end()) {
+        print "> ", $linebuffer->line(), "\n";
+        $linebuffer->moveLineCursor(offset => 1);
+    }
+
+    return $BlockBox::Components{$keyword}->new(lines => [ @lines ],
                                           docEnv => $args{linebuffer}->{docEnv},
-                                          optionString => $optionString);
+                                          optionString => $optionString,
+                                          description => $description);
 }
 
 1;

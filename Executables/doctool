@@ -460,7 +460,7 @@ if ($DocTool__convertSourcefiles || $DocTool__force) {
         Link->AddDocumentId(docEnv => $docEnv, documentId => $docId);
 
         $docEnv->{vars}->{TITLE} = "$filename ($sourcefile)";
-        if (Html->CheckDocumentId(documentId => "doc:index")) {
+        if (Link->CheckDocumentId(documentId => "doc:index")) {
             $docEnv->{vars}->{HOME} = Html->MakeLink(fromDocEnv => $docEnv,
                                                      toDocEnv => "doc:index");
         }

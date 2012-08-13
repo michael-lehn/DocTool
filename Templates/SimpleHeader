@@ -42,7 +42,8 @@
 
 <div id="wrap">
 
-<div class="nav_tut_middle">
+<div class="nav">
+<span class="nav_tut_middle">
 #IF_HOME_#
 <a class="nav" href="#_HOME_#">Home</a>
 #FI_HOME_#
@@ -61,14 +62,15 @@
 &nbsp;&nbsp;&nbsp;
 <a class="nav" href="#_NEXT_#">Next</a>
 #FI_NEXT_#
-</div>
+</span>
 
 
 #IF_FILETREE_#
-<div class="nav_tut_right">
+<span class="nav_tut_right">
 <a class="nav" href="#_FILETREE_#">Browse Files</a>
-</div>
+</span>
 #FI_FILETREE_#
+</div>
 
 <div><a name="top"></a></div>
 

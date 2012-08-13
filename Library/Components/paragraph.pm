@@ -23,7 +23,12 @@ sub html
 
     die unless $args{html};
 
-    $args{html}->addLine(line => "<p>");
+    my $css = "";
+    if ($args{html}->{paramlist}) {
+        $css = "class=\"paramlist\"";
+    }
+
+    $args{html}->addLine(line => "<p $css>");
 
     $args{html}->incrementIndentLevel();
     $args{html}->newLine();

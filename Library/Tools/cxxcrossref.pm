@@ -196,9 +196,6 @@ sub AddCrossRef
 
                     print "\$oldDestLine[$i] = '$oldDestLine[$i]'\n";
                     print "\$newDestLine[$i] = '$newDestLine[$i]'\n";
-
-                    die if $oldDest[$i] ne $newDest[$i];
-                    die if $oldDestLine[$i] ne $newDestLine[$i];
                 }
             }
         }

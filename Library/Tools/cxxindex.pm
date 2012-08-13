@@ -60,6 +60,17 @@ sub Touch
     $CxxIndex::CxxHeaderIndexTimestamp{$args{file}} = $timestamp;
 }
 
+sub CodeId2HtmlMark
+{
+    my $class = shift;
+    my %args = (codeId    => undef,
+                @_);
+    my $mark = $args{codeId};
+    $mark =~ s/#/\%23/g;
+    $mark =~ s/\&/\&amp;/g;
+    return $mark;
+}
+
 sub GetSnippet
 {
     my $class = shift;
@@ -275,6 +286,10 @@ sub AddId
                  keyword          => $args{keyword},
                  snippet          => $snippet};
 
+    while ($CxxIndex::CxxIndex{$args{id}}) {
+        $args{id} .= "#variant";
+    }
+
     $CxxIndex::CxxIndex{$args{id}} = $entry;
 
 #
@@ -427,7 +442,7 @@ sub UpdateDB
         printf STDERR "[INFO] ... processing $sourcefile.\n";
         my $cmd = "$DT_CXXINDEX $ENV{CXXFLAGS} $sourcefile";
 
-        # printf STDERR "\$cmd = $cmd\n";
+        printf STDERR "\$cmd = $cmd\n";
 
         $exec = "mkdir -p $ENV{TMP_DIR};" .
                 "cd $ENV{TMP_DIR};" .

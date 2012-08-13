@@ -54,6 +54,19 @@ sub AddDocumentId
     $Link::DocId{$args{documentId}} = $args{docEnv};
 }
 
+sub CheckDocumentId
+{
+    my $class = shift;
+    my %args =  (documentId => undef,
+                 @_);
+
+    unless (defined $Link::DocId{$args{documentId}}) {
+        return undef;
+    }
+    return 1;
+}
+
+
 sub LookUpDocumentId
 {
     my $class = shift;

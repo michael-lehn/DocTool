@@ -73,6 +73,9 @@ sub html
 
     $args{html}->addLine(line => "</$tag>");
     $args{html}->addLine();
+
+#   register that we just formated the title
+    $args{html}->{currentSection} = "SECTION $level";
 }
 
 sub Parse

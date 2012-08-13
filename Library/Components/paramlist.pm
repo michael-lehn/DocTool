@@ -24,6 +24,12 @@ sub html
 
     die unless $args{html};
 
+    unless ($args{html}->{paramlist}) {
+        $args{html}->{paramlist} = 1;
+    }else {
+        ++$args{html}->{paramlist};
+    }
+
     $args{html}->addLine(line => "<table class=\"paramlist\">");
 
     for my $item (@{$self->{items}}) {
@@ -41,6 +47,11 @@ sub html
     }
 
     $args{html}->addLine(line => "</table>");
+
+    ++$args{html}->{paramlist};
+    if ($args{html}->{paramlist}==0) {
+        $args{html}->{paramlist} = undef;
+    }
 }
 
 sub Parse

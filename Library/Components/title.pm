@@ -49,6 +49,13 @@ sub html
 
     $args{html}->addLine(line => "</h1>");
     $args{html}->addLine();
+
+#   register that we just formated the title
+    if ($self->{toc}) {
+        $args{html}->{currentSection} = "TITLE_TOC";
+    } else {
+        $args{html}->{currentSection} = "TITLE";
+    }
 }
 
 sub Parse

@@ -87,6 +87,7 @@ for (my $i=0; $i<=$#ARGV; ++$i) {
 }
 
 
+
 ######
 ##
 ## Copy CSS file to website.
@@ -325,7 +326,9 @@ for my $adtItem (@adtItem) {
 
     my $html = Html->new(adt => $adt, docEnv => $docEnv);
 
-    if ($docEnv->{sourceFile} ne "index.doc") {
+    if (($docEnv->{sourceFile} ne "index.doc")
+     && (Link->CheckDocumentId(documentId => "doc:index")))
+    {
         $docEnv->{vars}->{HOME} = Html->MakeLink(fromDocEnv => $docEnv,
                                                  toDocEnv => "doc:index");
     } else {
@@ -394,8 +397,12 @@ foreach my $item (@filetreeItem) {
     my @line;
     $docEnv->{sourceFilename} = undef;
 
-    $docEnv->{vars}->{HOME} = Html->MakeLink(fromDocEnv => $docEnv,
-                                             toDocEnv => "doc:index");
+    if (Link->CheckDocumentId(documentId => "doc:index")) {
+        $docEnv->{vars}->{HOME} = Html->MakeLink(fromDocEnv => $docEnv,
+                                                 toDocEnv => "doc:index");
+    } else {
+        $docEnv->{vars}->{HOME} = undef;
+    }
 
     my $link  = $docEnv->{sourcePath};
     $docEnv->{vars}->{TITLE} = $ENV{DOC_PROJECT} .  ": " . $link;
@@ -453,8 +460,10 @@ if ($DocTool__convertSourcefiles || $DocTool__force) {
         Link->AddDocumentId(docEnv => $docEnv, documentId => $docId);
 
         $docEnv->{vars}->{TITLE} = "$filename ($sourcefile)";
-        $docEnv->{vars}->{HOME} = Html->MakeLink(fromDocEnv => $docEnv,
-                                                 toDocEnv => "doc:index");
+        if (Html->CheckDocumentId(documentId => "doc:index")) {
+            $docEnv->{vars}->{HOME} = Html->MakeLink(fromDocEnv => $docEnv,
+                                                     toDocEnv => "doc:index");
+        }
 
         my $currentPath = $docEnv->{sourcePath};
         my $filetreeLink = Html->MakeLink(fromDocEnv => $docEnv,

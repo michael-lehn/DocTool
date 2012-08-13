@@ -110,6 +110,13 @@ sub convert
         die;
     }
 
+    my $extraCss = "";
+    if ($args{html}->{currentSection}) {
+        if ($args{html}->{currentSection} eq "TITLE_TOC") {
+            $extraCss = "half";
+        }
+    }
+
     my $file = $entry->{file};
     my $docId = "file:$entry->{headerfile}";
 
@@ -118,8 +125,10 @@ sub convert
                               toDocEnv => $docId,
                               mark => $1);
 
-    $args{html}->addLine(line => "<a name=\"$self->{codeId}\"> </a>\n");
-    $args{html}->addLine(line => "<div class=\"coderef_outer\">\n");
+    my $codeMark = CxxIndex->CodeId2HtmlMark(codeId => $self->{codeId});
+
+    $args{html}->addLine(line => "<a name=\"$codeMark\"> </a>\n");
+    $args{html}->addLine(line => "<div class=\"coderef_outer $extraCss\">\n");
     $args{html}->addLine(line => "<div class=\"coderef\">\n");
     $args{html}->addLine(line => $first);
     $args{html}->addLine(line => "<a class=\"coderef\" href=\"$link\">\n");

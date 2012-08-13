@@ -418,7 +418,7 @@ sub _FinishHtml
     my @html = ();
 
     my $startMonospace = "<div class=\"code_content\">" .
-                         "<span style=\"font-family:monospace\">\n";
+                         "<span class=\"code_content\">\n";
     my $endMonospace = "</span></div><!--code_content-->\n";
 
     if ($args{cxxCrossRef}) {
@@ -473,6 +473,8 @@ sub _FinishHtml
             for my $range (keys %{$args{cxxIndex}}) {
                 my $destDocEnv = $args{cxxIndex}->{$range}->{docEnv};
                 my $mark  = $args{cxxIndex}->{$range}->{id};
+                $mark = CxxIndex->CodeId2HtmlMark(codeId => $mark);
+
                 my $link = Html->MakeLink(fromDocEnv => $args{docEnv},
                                           toDocEnv   => $destDocEnv,
                                           mark       => $mark);
@@ -507,7 +509,11 @@ sub _FinishHtml
             }
         }
 
-        @html = ("<table><tr><td class=\"code_linenumbers\">\n",
+        my $css="code_listing";
+        if ($args{linenumbers}) {
+            $css = " code_with_linenumbers";
+        }
+        @html = ("<table class=\"$css\"><tr><td class=\"code_linenumbers\">\n",
                  $startMonospace,
                  @numbers,
                  $endMonospace,

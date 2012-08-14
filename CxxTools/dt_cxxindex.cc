@@ -30,7 +30,7 @@ struct Data {
 
     Data(const char *_sourcefile)
         : sourcefile(_sourcefile),
-          headerfile(sourcefile.substr(0, sourcefile.find(".")) + ".h")
+          headerfile(sourcefile.substr(0, sourcefile.rfind(".")) + ".h")
     {
     }
 

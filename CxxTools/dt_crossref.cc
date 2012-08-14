@@ -23,7 +23,7 @@ struct Data {
     bool
     matchesPrefix(const char *cstr) const
     {
-        int prefixLen = prefix.length();
+        unsigned int prefixLen = prefix.length();
 
         if (strlen(cstr)<prefixLen) {
             return false;

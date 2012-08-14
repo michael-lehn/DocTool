@@ -28,6 +28,7 @@ sub new
     $self->{options} = {file => "",
                         create => 1,
                         downloadable => 1,
+                        type => $self->{type},
                         Options->Split(string => $self->{optionString})};
 
     if (($self->{options}->{file}) && ($self->{options}->{downloadable})) {
@@ -69,7 +70,7 @@ sub convert
                 @_);
 
     my @codelines = Convert->CodeBlock(codelinesRef => $self->{lines},
-                                       fileExtension => $self->{type},
+                                       fileExtension => $self->{options}->{type},
                                        linenumbers => $self->{linenumbers});
 
     $args{html}->addLine(line => "<div class=\"code\">\n");
@@ -96,19 +97,19 @@ sub convert
 #     my $self = shift;
 #     my %args = (html => undef,
 #                 @_);
-# 
+#
 #     my $syntaxOnOff = "-c \"syntax on\" ";
 #     # my $numbers = "-c \"set number\"";
 #     my $numbers = "";
-# 
+#
 #     my $fullpath = DocUtils->CreateFullpath(basename => "code",
 #                                             extension => "cc",
 #                                             prefix => $ENV{TMP_DIR});
-# 
+#
 #     DocUtils->SaveLinebuffer(file => $fullpath,
 #                              linesRef => $self->{lines},
 #                              appendNewLine => 1);
-# 
+#
 #     # generate html using vim
 #     my $vim = $ENV{VIM};
 #     my $convert = join(" ", "$vim -e -f",
@@ -118,11 +119,11 @@ sub convert
 #                              "-c \"wq\" -c \"q\" $fullpath > /dev/null");
 #     my $clean = "rm ${fullpath}.html";
 #     system "$convert";
-# 
+#
 #     my @linebuffer = DocUtils->LoadLinebuffer(file => "${fullpath}.html"); 
-# 
+#
 # #    system "$clean";
-# 
+#
 #     my @outBuffer;
 #     while (my $line = shift(@linebuffer)) {
 #         last if $line =~ /<body/;
@@ -132,7 +133,7 @@ sub convert
 #         push(@outBuffer, "<div class=\"code_title\">\n");
 #         my $sourcePath = $args{html}->{docEnv}->{sourcePath};
 #         my $file = $self->{options}->{file};
-# 
+#
 #         my $relPath = DocUtils->RelativePath(currentPath => $sourcePath,
 #                                              removeDestinationPrefix => $ENV{HTML_DIR},
 #                                              destinationPath => $ENV{DOWNLOAD_DIR});
@@ -150,7 +151,7 @@ sub convert
 #         $line =~ s/8080ff/0000CD/g;
 #         $line =~ s/‘/&lsquo;/g;
 #         $line =~ s/’/&lsquo;/g;
-# 
+#
 #         if ($numbers) {
 #             chomp($line);
 #             $line  = "<a name=\"line${lineNumber}\"></a>" . $line . "\n";

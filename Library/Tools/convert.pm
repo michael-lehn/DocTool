@@ -572,6 +572,7 @@ sub _AddSourceCode
 
     return Convert->_FinishHtml(sourceCodeInfoId => $id,
                                 linenumbers      => $args{linenumbers},
+                                fileExtension    => $args{fileExtension},
                                 cxxIndex         => $args{cxxIndex},
                                 cxxCrossRef      => $args{cxxCrossRef},
                                 docEnv           => $args{docEnv});

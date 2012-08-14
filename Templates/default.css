@@ -279,7 +279,6 @@ td.paramlist_value {
     border: outset 0pt;
     padding: 0px;
 
-    width: 92%;
 }
 
 p.paramlist {
@@ -446,7 +445,7 @@ div.code {
     padding: 0px;
     margin-left: 10px;
     margin-right: 40px;
-    margin-bottom:0px;
+    margin-bottom:15px;
     margin-top:0px;
 }
 

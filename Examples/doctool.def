@@ -1,8 +1,0 @@
-:function: THEOREM($1) +
-           BOX (class=theorem, title=$1)
-
-:function: WARNING +
-           BOX (class=warning)
-
-:function: NOTE +
-           BOX (class=note)

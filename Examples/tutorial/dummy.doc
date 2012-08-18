@@ -1,0 +1,47 @@
+===========
+Class Dummy                                                            [TOC]
+===========
+
+Here we describe what class
+
+*--[CODEREF]----------------------------------------------------------------*
+|                                                                           |
+|  struct Dummy;                                                            |
+|                                                                           |
+*---------------------------------------------------------------------------*
+                                                                 [c:@S@Dummy]
+is actually doing.
+
+
+Dummy Methods
+=============
+Here describe all the methods.  In a more complex example we would have
+sections for constructors, operators, ...
+
+
+*--[CODEREF]----------------------------------------------------------------*
+|                                                                           |
+|  void                                                                     |
+|  foo();                                                                   |
+|                                                                           |
+*---------------------------------------------------------------------------*
+                                                          [c:@S@Dummy@F@foo#]
+
+    This method is doing the very important foo things on dummy stuff.
+
+
+Functions
+=========
+
+*--[CODEREF]----------------------------------------------------------------*
+|                                                                           |
+|  void                                                                     |
+|  foo();                                                                   |
+|                                                                           |
+*---------------------------------------------------------------------------*
+                                                                  [c:@F@foo#]
+
+    This is another foo function.
+
+
+

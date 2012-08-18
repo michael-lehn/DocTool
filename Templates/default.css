@@ -256,7 +256,7 @@ table.paramlist {
     padding: 0px;
 
     margin:0px;
-    border-spacing:10px;
+    border-spacing-top:    0px 10px;
     width: 100%;
 }
 
@@ -268,11 +268,12 @@ tr.paramlist {
 
 td.paramlist_key {
     border: outset 0pt;
-    padding: 0px;
+    padding: 0px 10px 0px 0px;
 
     text-align: left;
     vertical-align: top;
     font-weight:bold;
+    width: 10%;
 }
 
 td.paramlist_value {

@@ -1,0 +1,93 @@
+============
+Hello World!                                                            [TOC]
+============
+
+The following outlines my initial my motivation for writing `doctool`.
+
+For the sake of simplicity, assume you have written the famous __Hello world__
+example in C++.  Now you want to explain some students what's it doing, how it's
+doing what's it doing, how to compile it and how to execute it.
+
+
+Write the C++ Program
+=====================
+You first write the program.  At this point of time you are just concerned that
+the program works at all.  Just imagine that it's not about printing
+'Hello word'.  Instead, suppose it's about some numerical method you want to
+teach _tomorrow morning_ and this program should be an example implementation.
+
+So anyway, you end up with a C++ program that is doing what it is supposed
+to do.  So you have __this__.
+
+
+Present the Code
+================
+Using the `:import:` directive you can include the program listing into you
+document.  If you add the `downloadable` option you can click the title.  What
+you get is this:
+
+:import: tutorial/hello.cc [downloadable]
+
+
+Compiling the Code
+==================
+Next you want to explain how to compile the code.  Don't talk about, do it.  The
+shell box gets executed when the doc file gets converted to HTML:
+
+  *--[SHELL]----------------------------*
+  |                                     |
+  |  cd tutorial                        |
+  |  clang++ -Wall -o hello hello.cc    |
+  |                                     |
+  *-------------------------------------*
+
+Explain the compile options with a parameter list (requires at least four spaces
+between _parameter key_ and _parameter explanation_):
+
+    -Wall       Show all warnings.
+    -o hello    The resulting executable will be named `hello`.
+    hello.cc    The C++ source file.
+
+
+Executing the Program
+=====================
+Once compiled we can execute the program.  This time we use a more 'lightweight'
+variant for the shell (see document source).
+
+  --- SHELL ----
+  cd tutorial
+  ./hello
+  --------------
+
+
+Adding Comments
+===============
+For small example programs I like to insert some *brief* comments into the
+example source code.  For example, I want to explain what the `#include` or
+the `std::cout` is doing.  If such comments are done with `///`, `//-` or
+`//*` these brief comments can be extracted by *doctool*.
+
+Let us call this new version __hello2.cc__.
+
+
+Some Notes
+----------
+We can import the explanations from the source file with the `:import:`
+directive together with the `brief` option.  The comment will be followed with
+consecutive source code (terminated by the next empty line).
+
+:import: tutorial/hello2.cc [brief]
+
+Complete Code
+-------------
+If you want to show the whole code listing these in-source comments are
+annoying.  Using the `stripped` option they get removed from the listing
+if you are using the `:import:` directive:
+
+:import: tutorial/hello2.cc [stripped, downloadable]
+
+
+
+:links: Hello world -> http://en.wikipedia.org/wiki/Hello_world_program
+        this        -> file:tutorial/hello.cc
+        hello2.cc   -> file:tutorial/hello2.cc

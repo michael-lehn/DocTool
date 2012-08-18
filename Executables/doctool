@@ -281,6 +281,12 @@ foreach my $docfile (@docfile) {
     print STDERR "[INFO]  ... alternate DocId will be \"$docId\"\n";
     Link->AddDocumentId(documentId => $docId, docEnv => $docEnv);
 
+#   Also add an id for the doc-source file
+    Link->AddDocumentId(docEnv => DocEnv->new(sourceFile => "${docfile}.txt",
+                                              outputExtension => "txt",
+                                              keepExtension => undef),
+                        documentId => "file:${docfile}.txt");
+
     # parse document
     my $linebuffer = Linebuffer->new(docEnv => $docEnv);
     my $adt = Parse->new(linebuffer => $linebuffer);

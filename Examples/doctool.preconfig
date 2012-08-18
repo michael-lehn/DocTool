@@ -1,4 +1,4 @@
-export DOC_PROJECT=Dummy
+export DOC_PROJECT=DocTool
 
 export AUTHOR="Michael Lehn"
 export AUTHOR_WEBSITE="http://www.mathematik.uni-ulm.de/~lehn/"

@@ -1,0 +1,29 @@
+=================
+API Documentation
+=================
+
+- For some reason I don't like the __Javadoc__ concept of in-source comments for
+  creating the documentation.
+- Instead of bloating my source code I want to keep the documentation in a
+  separate file.
+- Consider some C++ source file __func.cc__ that provides some functions or
+  classes declared in __func.h__.  Then *doctool* will create some doc-file
+  stub __func.doc.txt__.
+- You see that the `CODEREF` box in the doc-file is logically linked with the
+  declaration in the header file through the USR identifier below the box.
+- If you modify the function declaration in __func.h__ the following happens:
+   - If you just modify the formation the CODEREF box gets updated.
+   - If you add a function to the header file __func.h__ and a definition to the
+     source file __func.cc__ a new stub gets added to __func.doc.txt__.
+   - If you only add a declaration to __func.h__ *nothing happens*.  Because
+     forward declarations are ignored.
+   - If you change the signature of a function or if you remove a function the
+     `CODEREF` block becomes obsolete.  *doctool* will stop and tell you where
+     obsolete blocks are located.  Unless you remove these blocks *doctool*
+     will not go further (zero tolerance).
+- Some API documentation with a bit more text: __dummy.h__, __dummy.cc__ and
+  __dummy.doc__.
+
+
+:links: Javadoc   ->  http://en.wikipedia.org/wiki/Javadoc
+        (.*)      ->  file:tutorial/$1

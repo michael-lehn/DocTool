@@ -25,5 +25,32 @@ API Documentation
   __dummy.doc__.
 
 
+The Idea
+~~~~~~~~
+
+- API documentation should not make the header files unclear or hard to read.
+- API documentation should be divided into three layers.  Each layer goes into
+  its own file:
+
+  myfunc.doc    Gives a general overview of the provided functionality, purpose,
+                etc.  It gives newbies the big picture.  It also goes into
+                detail.  It basically contains everything important.  Yes, it
+                is hard to write good documentation that can achieve all of
+                this.  So in this file you really can focus on writing good
+                documentation.
+  myfunc.h      Through its declarations and short comments it very briefly
+                describes your interface.  If more detail is needed go to
+                *myfunc.doc*.
+  myfunc.cc     Comments in this file address other core developers.  Hints in
+                these comments deal with real inside knowledge, e.g. __such__
+                a comment only makes sense to people that are involved.
+
+
+
 :links: Javadoc   ->  http://en.wikipedia.org/wiki/Javadoc
+        __such__  ->  http://www.mathematik.uni-ulm.de/~lehn/FLENS/flens/lapack/impl/laqr0.tcc.html#341
         (.*)      ->  file:tutorial/$1
+
+:navigate: up     -> doc:index
+           next   -> doc:tutorial/example3
+           back   -> doc:tutorial/example1

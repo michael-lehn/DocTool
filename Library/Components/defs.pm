@@ -134,7 +134,7 @@ sub NAVIGATE
 
     for my $defValue (@defValue) {
         die "[ERROR] Unable to parse \"$defValue\""
-            unless $defValue =~ /^\s*?__(.*)__\s*->\s*(\S.*?)(#(\S.*))?\s*$/;
+            unless $defValue =~ /^\s*(\S.*\S)\s*->\s*(\S.*?)(#(\S.*))?\s*$/;
 
         unless ((defined $1) && (defined $2)) {
             die "[ERROR] Unable to parse \"$defValue\"";
@@ -143,6 +143,10 @@ sub NAVIGATE
         my $key         = $1;
         my $destination = $2;
         my $mark        = $4;
+
+        if ($key =~ /__(.*)__/) {
+            $key = $1;
+        }
 
         unless (exists $navigate{$key}) {
             die "[ERROR] Unknown navigation keyword \"$key\"";

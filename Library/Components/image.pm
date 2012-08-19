@@ -54,9 +54,19 @@ sub html
 #
 #           TODO: Check if "from/filename" exists and otherwise die!
 #
-            DocUtils->Install(from => $args{html}->{docEnv}->{sourcePath},
+
+#           I think its more transparent to specify the image file relative
+#           to DOCSRC_DIR ...
+#
+#            DocUtils->Install(from => $args{html}->{docEnv}->{sourcePath},
+#                              filename => $line,
+#                              to => $args{html}->{docEnv}->{outputPath});
+            DocUtils->Install(from => $ENV{DOCSRC_DIR},
                               filename => $line,
-                              to => $args{html}->{docEnv}->{outputPath});
+                              to => $ENV{HTML_DIR});
+            $line = DocUtils->_RelativePath(filename => $line,
+                                    fromPath => $args{html}->{docEnv}->{outputPath},
+                                    toPath =>   $ENV{HTML_DIR});
             $args{html}->append(line => "<img src=\"$line\">\n");
         }
         $args{html}->append(line => "</div>");

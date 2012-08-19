@@ -54,10 +54,10 @@ Executing the Program
 Once compiled we can execute the program.  This time we use a more 'lightweight'
 variant for the shell (see document source).
 
-  --- SHELL ----
+  --- SHELL ---
   cd tutorial
   ./hello
-  --------------
+  -------------
 
 
 Adding Comments
@@ -78,8 +78,8 @@ consecutive source code (terminated by the next empty line).
 
 :import: tutorial/hello2.cc [brief]
 
-Complete Code
--------------
+Complete Code (Stripped)
+------------------------
 If you want to show the whole code listing these in-source comments are
 annoying.  Using the `stripped` option they get removed from the listing
 if you are using the `:import:` directive:
@@ -87,7 +87,16 @@ if you are using the `:import:` directive:
 :import: tutorial/hello2.cc [stripped, downloadable]
 
 
+Complete Code (Unstripped)
+--------------------------
+And that's how the code would look like unstripped:
+
+:import: tutorial/hello2.cc [downloadable]
+
 
 :links: Hello world -> http://en.wikipedia.org/wiki/Hello_world_program
         this        -> file:tutorial/hello.cc
         hello2.cc   -> file:tutorial/hello2.cc
+
+:navigate: up   -> doc:index
+           next -> doc:tutorial/example2

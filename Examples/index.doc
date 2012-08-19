@@ -64,6 +64,7 @@ Examples
 ========
 - __Example 1__: Writing a simple tutorial for the _Hello world!_ programm.
 - __Example 2__: Class API Documentation.
+- __Example 3__: Literate Programming.
 
 
 More Examples
@@ -76,6 +77,10 @@ for __FLENS__.  So you can see more examples there:
  - Numerical routines: __trs__, __sv__
  - Small examples: __lapack-gelsy__
 
+
+Final Note
+==========
+Make sure your editor expands tabs to spaces.  Otherwise you will go nuts.
 
 
 :links: reStructuredText  ->  http://en.wikipedia.org/wiki/ReStructuredText

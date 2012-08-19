@@ -69,8 +69,8 @@ Examples
 
 More Examples
 =============
-The sole purpose of *doctool* is the creation of documentation and tutorials
-for __FLENS__.  So you can see more examples there:
+Originally the sole purpose of *doctool* was the creation of documentation and
+tutorials for __FLENS__.  So you can see more examples there:
 
  - Tables and other formatting: __FLENS-LAPACK__
  - Class API: __GeMatrix__, __DenseVector__

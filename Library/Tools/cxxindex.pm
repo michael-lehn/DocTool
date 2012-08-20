@@ -286,8 +286,36 @@ sub AddId
                  keyword          => $args{keyword},
                  snippet          => $snippet};
 
-    while ($CxxIndex::CxxIndex{$args{id}}) {
-        $args{id} .= "#variant";
+    if ($CxxIndex::CxxIndex{$args{id}}) {
+#
+#       Due to a bug in libclang an USR is not always unique.
+#       (http://llvm.org/bugs/show_bug.cgi?id=13575)
+#       In this case we add the compressed function declaration.
+#
+        my $string = "";
+        for my $line (@{$snippet}) {
+            if ($line =~ /^([^\(]*)\(/) {
+                $string .= $1;
+                last;
+            } else {
+                $string .= $line;
+            }
+        }
+        my $compressed = $string;
+        $compressed =~ s/\W//g;
+        $args{id} .= $compressed;
+
+#
+#       if this id is still not unique there is another problem
+#
+        if ($CxxIndex::CxxIndex{$args{id}}) {
+            printf STDERR "[ERROR] In headerfile '$args{headerfile}:'\n";
+            printf STDERR "[ERROR] Id generated for '$snippet' is not unique.\n";
+            die;
+        }
+        printf "[INFO] hack: '$string' was compressed to '$compressed'\n";
+        printf "[INFO] new if is '$args{id}'\n";
+
     }
 
     $CxxIndex::CxxIndex{$args{id}} = $entry;

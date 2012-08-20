@@ -76,6 +76,9 @@ tutorials for __FLENS__.  So you can see more examples there:
  - Class API: __GeMatrix__, __DenseVector__
  - Numerical routines: __trs__, __sv__
  - Small examples: __lapack-gelsy__
+ - C++ Source Code Listings with Cross References: __mv__, __gesv__ (linked
+   keyword are underlined with dots).
+ - ...
 
 
 Final Note
@@ -95,4 +98,6 @@ Make sure your editor expands tabs to spaces.  Otherwise you will go nuts.
         trs               ->  http://www.mathematik.uni-ulm.de/~lehn/FLENS/flens/lapack/impl/trs.html
         sv                ->  http://www.mathematik.uni-ulm.de/~lehn/FLENS/flens/lapack/impl/sv.html
         lapack-gelsy      ->  http://www.mathematik.uni-ulm.de/~lehn/FLENS/flens/examples/lapack-gelsy.html
+        mv                ->  http://www.mathematik.uni-ulm.de/~lehn/FLENS/flens/examples/tut02-page03-example.cc.html
+        gesv              ->  http://www.mathematik.uni-ulm.de/~lehn/FLENS/flens/examples/lapack-gesv.cc.html
 

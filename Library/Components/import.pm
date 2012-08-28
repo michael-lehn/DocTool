@@ -65,7 +65,7 @@ sub ExpandBriefComments
 
         while ($i<=$#input) {
             $line = $input[$i];
-            if ($line =~ /^\s*$/) {
+            if (($line =~ /^\s*$/) || ($line =~ /^\s*$Import::Comment-.*$/)) {
                 push(@output, Import->MakeCodeBlock(code => \@codeLines));
                 last;
             }

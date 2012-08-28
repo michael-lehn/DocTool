@@ -241,6 +241,9 @@ td.header {
 */
 }
 
+a {
+}
+
 p {
     /*
     margin: 0px;
@@ -274,6 +277,7 @@ td.paramlist_key {
     vertical-align: top;
     font-weight:bold;
     width: 10%;
+    text-decoration: none;
 }
 
 td.paramlist_value {
@@ -492,7 +496,10 @@ div.theorem {
 }
 
 div.note {
+    /*
     background-color: #B3CDE0;
+    */
+    background-color: #F6F6F6;
 }
 
 div.warning {

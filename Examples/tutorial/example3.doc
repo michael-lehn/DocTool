@@ -1,0 +1,91 @@
+====================
+Literate Programming                                                    [TOC]
+====================
+
+If you look at the source code of this __page__ you will notice that there
+are no `:import:` directives.  So no C++ code gets imported.  Instead C++ code
+gets created from this document.  It also creates and executes some __gnuplot__
+scripts.
+
+So if you read the source code of this __page__ think of it as a single entity.
+Don't distinguish between _doc-file_, _C++ code_, _shell script_, _gnuplot
+script_.  Seeing things this way follows ideas from __literate programming__.
+
+
+Producing some Data
+===================
+The following C++ code will be used later to create data for plotting the
+$\sin$ function.  Note that the C++ code is not getting imported from some
+external source.  Instead the C++ code is part of the document source.  This
+is similar to how you would embed C++ listings in a $\LaTeX$ file.
+
+  --- CODE (file=tutorial/sin.cc) ---------------------
+  #include <cmath>
+  #include <iostream>
+  
+  const int N = 100;
+  
+  int
+  main()
+  {
+      for (int i=0; i<=N; ++i) {
+          const double x = 2*M_PI*i/N;
+          std::cout << x << " " << sin(x) << std::endl;
+      }
+  }
+  -----------------------------------------------------
+
+Compile this code from the command line with
+
+  --- SHELL -----------------
+  cd tutorial
+  clang++ -Wall -o sin sin.cc
+  ---------------------------
+
+and then execute it with
+
+  --- SHELL -----------------
+  cd tutorial
+  ./sin > data
+  ---------------------------
+
+Note that the output of `sin` gets redirected into a file named `data`.
+
+
+Plotting Data
+=============
+We will plot the data with __gnuplot__.  The following commands will executed
+by __gnuplot__:
+
+  --- CODE (file=tutorial/sin.gps) ------
+  set terminal png
+  set output "sin.png"
+  plot "data" using 1:2 with lines
+  ---------------------------------------
+
+Simply call __gnuplot__ from the terminal like that
+
+  --- SHELL -----------------
+  cd tutorial
+  gnuplot sin.gps
+  ---------------------------
+
+This will produce an image named `sin.png` that looks like that:
+
+  ---- IMAGE -----
+  tutorial/sin.png
+  ----------------
+
+
+Final Notes
+===========
+Think of reading some magic book where everything you read actually happens.
+That's how *doctool* reads the __page__source.
+
+
+:links: page                 -> file:tutorial/example3.doc.txt
+        gnuplot              -> http://www.gnuplot.info
+        literate programming -> https://en.wikipedia.org/wiki/Literate_programming
+
+:navigate: up     -> doc:index
+           back   -> doc:tutorial/example2

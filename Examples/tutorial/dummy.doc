@@ -9,7 +9,7 @@ Here we describe what our class
 |  struct Dummy;                                                            |
 |                                                                           |
 *---------------------------------------------------------------------------*
-                                                                 [c:@S@Dummy]
+                                                      [c:@S@DummystructDummy]
 is actually doing.
 
 
@@ -18,14 +18,13 @@ Dummy Methods
 Here describe all the methods.  In a more complex example we would have
 sections for constructors, operators, ...
 
-
 *--[CODEREF]----------------------------------------------------------------*
 |                                                                           |
 |  void                                                                     |
 |  foo();                                                                   |
 |                                                                           |
 *---------------------------------------------------------------------------*
-                                                          [c:@S@Dummy@F@foo#]
+                                                      [c:@S@Dummy@F@foo#void]
 
     This method is doing the very important foo things on dummy stuff.
 
@@ -39,9 +38,7 @@ Functions
 |  foo();                                                                   |
 |                                                                           |
 *---------------------------------------------------------------------------*
-                                                                  [c:@F@foo#]
+                                                              [c:@F@foo#void]
 
     This is another foo function.
-
-
 

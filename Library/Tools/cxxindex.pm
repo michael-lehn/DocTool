@@ -286,37 +286,47 @@ sub AddId
                  keyword          => $args{keyword},
                  snippet          => $snippet};
 
-    if ($CxxIndex::CxxIndex{$args{id}}) {
 #
-#       Due to a bug in libclang an USR is not always unique.
-#       (http://llvm.org/bugs/show_bug.cgi?id=13575)
-#       In this case we add the compressed function declaration.
+#   Due to a bug in libclang an USR is not always unique.
+#   (http://llvm.org/bugs/show_bug.cgi?id=13575)
+#   In this case we add the compressed function declaration.
 #
-        my $string = "";
-        for my $line (@{$snippet}) {
-            if ($line =~ /^([^\(]*)\(/) {
-                $string .= $1;
-                last;
-            } else {
-                $string .= $line;
-            }
+    my $string = "";
+    for my $line (@{$snippet}) {
+        if ($line =~ /^([^\(]*?)\w*\(/) {
+            $string .= $1;
+            last;
+        } else {
+            $string .= $line;
         }
-        my $compressed = $string;
-        $compressed =~ s/\W//g;
-        $args{id} .= $compressed;
-
-#
-#       if this id is still not unique there is another problem
-#
-        if ($CxxIndex::CxxIndex{$args{id}}) {
-            printf STDERR "[ERROR] In headerfile '$args{headerfile}:'\n";
-            printf STDERR "[ERROR] Id generated for '$snippet' is not unique.\n";
-            die;
-        }
-        printf "[INFO] hack: '$string' was compressed to '$compressed'\n";
-        printf "[INFO] new if is '$args{id}'\n";
-
     }
+    my $compressed = $string;
+    $compressed =~ s/[\s<>:]//g;
+    $compressed =~ s/!/not/g;
+    $compressed =~ s/\|\|/or/g;
+    $compressed =~ s/\|/bor/g;
+    $compressed =~ s/\&\&/and/g;
+    $compressed =~ s/\&/band/g;
+    $args{id} .= $compressed;
+
+#
+#   if this id is still not unique there is another problem
+#
+    if ($CxxIndex::CxxIndex{$args{id}}) {
+        printf STDERR "[ERROR] In headerfile '$args{headerfile} " .
+                      "($args{headerfile_range}):\n";
+        my $snippetStr = join("\n", @{$snippet});
+        printf STDERR "[ERROR] Id generated for \n$snippetStr\n not unique.\n";
+
+        my $oldEntry = $CxxIndex::CxxIndex{$args{id}};
+        printf STDERR "[ERROR] Previous definition in headerfile " .
+                      "'$oldEntry->{headerfile} " .
+                      "($oldEntry->{headerfile_range}):\n";
+
+        die;
+    }
+    printf "[INFO] hack: '$string' was compressed to '$compressed'\n";
+    printf "[INFO] new id is '$args{id}'\n";
 
     $CxxIndex::CxxIndex{$args{id}} = $entry;
 
@@ -499,7 +509,7 @@ sub UpdateDB
     @index = keys %index;
 
     #
-    #   For trimming the range of class definitions we need to readin the
+    #   For trimming the range of class definitions we need to read in the
     #   headerfile.
     #
     my @headerfile = DocUtils->LoadLinebuffer(file           => $headerfile,

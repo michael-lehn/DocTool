@@ -23,6 +23,9 @@ BEGIN {
     DocUtils->EvalConfigFile(file => "doctool.preconfig");
     DocUtils->EvalConfigFile(file => "$ENV{DOCTOOL}/Configuration/doctool.config");
     DocUtils->EvalConfigFile(file => "doctool.postconfig");
+
+    print STDERR "\n";
+    print STDERR "[INFO] Project name: $ENV{DOC_PROJECT}\n";
 }
 
 use DocEnv;
@@ -39,9 +42,9 @@ use CxxIndex;
 ##
 ######
 
-my $DocTool__convertSourcefiles;
+my $DocTool__convertSourcefiles = 1;
 my $DocTool__createCrossReferences;
-my $DocTool__force;
+my $DocTool__force = 1;
 my $DocTool__parseOnly;
 my $DocTool__updateCxxIndex;
 my $DocTool__createLatexPics;
@@ -85,7 +88,6 @@ for (my $i=0; $i<=$#ARGV; ++$i) {
                  "]\n\n\n";
     exit;
 }
-
 
 
 ######

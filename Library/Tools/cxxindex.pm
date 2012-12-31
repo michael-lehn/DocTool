@@ -561,7 +561,10 @@ sub UpdateDB
             }
 
             unless ($id) {
-                die "error in:  $index\n";
+                # TODO: make this an error, not a warning
+                printf STDERR "error in:  $index\n";
+                # die;
+                next;
             }
             $sourcefile = $1;
             $sourcefile =~ s/^\///;

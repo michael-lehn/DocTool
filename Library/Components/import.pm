@@ -55,7 +55,7 @@ sub ExpandBriefComments
         while ($i<=$#input) {
             $line = $input[$i];
 
-            if ($line =~ s/^\s*$Import::Comment(.*)$//) {
+            if ($line =~ /^\s*$Import::Comment(.*)$/) {
                 push(@output, $1);
                 ++$i;
                 next;
@@ -70,6 +70,7 @@ sub ExpandBriefComments
                 last;
             }
             if ($line =~ /^\s*$Import::Comment.*$/) {
+                push(@output, Import->MakeCodeBlock(code => \@codeLines));
                 --$i;
                 last;
             }
@@ -168,7 +169,9 @@ sub Parse
 
     my @output;
 
-    if ($option{downloadable}) {
+    if ($option{brief}) {
+        @output = Import->ExpandBriefComments(input => \@input);
+    } else {
         if ($option{stripped}) {
             @output = Import->RemoveComments(input => \@input,
                                              file => $args{file},
@@ -177,16 +180,6 @@ sub Parse
             @output = Import->MakeCodeBlock(code => \@input,
                                             file => $args{file},
                                             create => $args{create});
-        }
-    } else {
-        if ($option{stripped}) {
-            @output = Import->RemoveComments(input => \@input);
-        } else {
-            if ($option{brief}) {
-                @output = Import->ExpandBriefComments(input => \@input);
-            } else {
-                @output = Import->ExpandComments(input => \@input);
-            }
         }
     }
 

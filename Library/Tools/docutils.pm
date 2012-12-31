@@ -556,8 +556,8 @@ sub EvalConfigFile
     my %var;
     while (my $line=$fh->getline()) {
         # remove comments
-        $line =~ s/[^\\]#.*//;
-        $line =~ s/^#.*//;
+        # $line =~ s/[^\\]#.*//;
+        $line =~ s/^\s*#.*//;
 
         if ($line =~ /\s*([^\s=]*)=(.*)$/) {
             $var{$1} = DocUtils->ReplaceShellVars(line => $2,
@@ -584,9 +584,28 @@ sub ReplaceShellVars
     #   but not nested like ${BLA${BLUB}}
     #   or variables like ${DUMMY:-${PWD}}
     while ($args{line} =~ /\$\{([^}{:]*)\}/) {
+        my $found = $1;
         my $var = $1;
-        my $value = $VARS{$var};
-        $args{line} =~ s/\$\{$var\}/$value/g;
+        my $value;
+        my $leftRemove = undef;
+
+        if ($var=~/^([^#]*)#(.*)$/) {
+            $var        = $1;
+            $leftRemove = $2;
+        }
+
+        if ($VARS{$var}) {
+            $value = $VARS{$var};
+        } else {
+            print STDERR "[ERROR] Enviroment variable '$var' does not exist\n";
+            die;
+        }
+
+        if ($leftRemove) {
+            $value =~ s/^$leftRemove//;
+        }
+
+        $args{line} =~ s/\$\{$found\}/$value/g;
     }
     while ($args{line} =~ /\$\{([^}:]*):-([^}]*)\}/) {
         my $var = $1;

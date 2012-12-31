@@ -547,6 +547,8 @@ div.shell {
     background-color: #FAFAFA;
     color: #000000;
 
+    overflow: auto;
+
     margin-left: 10px;
     margin-right: 40px;
     margin-bottom:0px;

@@ -44,7 +44,7 @@ use CxxIndex;
 
 my $DocTool__convertSourcefiles = 1;
 my $DocTool__createCrossReferences;
-my $DocTool__force = 1;
+my $DocTool__force;
 my $DocTool__parseOnly;
 my $DocTool__updateCxxIndex;
 my $DocTool__createLatexPics;

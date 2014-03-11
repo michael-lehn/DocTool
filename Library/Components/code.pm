@@ -19,8 +19,7 @@ sub new
                  optionString => "",
                  options => undef,
                  html => undef,
-                 type => "cc",
-                 linenumbers   => 0,
+                 type => undef,
                  @_};
     bless ($self, $class);
 
@@ -28,8 +27,25 @@ sub new
     $self->{options} = {file => "",
                         create => 1,
                         downloadable => 1,
-                        type => $self->{type},
+                        type => undef,
+                        linenumbers => undef,
+                        plain => undef,
                         Options->Split(string => $self->{optionString})};
+
+    if ($self->{options}->{title}) {
+        if ($self->{options}->{title} eq "no") {
+            $self->{options}->{notitle} = 1
+        }
+    }
+
+    if ($self->{options}->{file} && (!$self->{options}->{type})) {
+        if ($self->{options}->{file} =~ /\.(.*)$/) {
+            $self->{options}->{type} = $1;
+        }
+    }
+    if (!$self->{options}->{type}) {
+        $self->{options}->{type} = "cc";   # default to C++
+    }
 
     if (($self->{options}->{file}) && ($self->{options}->{downloadable})) {
         my $filename = join("/", $ENV{DOWNLOAD_DIR}, $self->{options}->{file});
@@ -69,12 +85,24 @@ sub convert
     my %args = (html => undef,
                 @_);
 
-    my @codelines = Convert->CodeBlock(codelinesRef => $self->{lines},
-                                       fileExtension => $self->{options}->{type},
-                                       linenumbers => $self->{linenumbers});
+    my @codelines;
 
-    $args{html}->addLine(line => "<div class=\"code\">\n");
-    if ($self->{options}->{file}) {
+    if (! $self->{options}->{plain}) {
+        @codelines = Convert->CodeBlock(
+                               codelinesRef => $self->{lines},
+                               fileExtension => $self->{options}->{type},
+                               linenumbers => $self->{options}->{linenumbers});
+    } else {
+        @codelines = @{$self->{lines}};
+    }
+
+    if (! $self->{options}->{class}) {
+        $args{html}->addLine(line => "<div class=\"code\">\n");
+    } else {
+        my $class = $self->{options}->{class};
+        $args{html}->addLine(line => "<div class=\"$class\">\n");
+    }
+    if ($self->{options}->{file} and !$self->{options}->{notitle}) {
         $args{html}->addLine(line => "<div class=\"code_title\">\n");
         my $sourcePath = $args{html}->{docEnv}->{sourcePath};
         my $file = $self->{options}->{file};

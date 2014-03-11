@@ -1,10 +1,5 @@
-CXX      = clang++
+CXX      = clang++-3.2
 CXXFLAGS += -std=c++11 -Wall -Werror
-LDFLAGS  += -lclang
-
-SOURCE_FILES = $(wildcard *.cc)
-OBJECT_FILES = $(patsubst %.cc,%.o,$(SOURCE_FILES))
-TARGETS      = $(patsubst %.cc,%,$(SOURCE_FILES))
 
 #
 # Adjust CPPFLAGS and LDFLAGS for libclang
@@ -15,8 +10,16 @@ TARGETS      = $(patsubst %.cc,%,$(SOURCE_FILES))
 #  LDFLAGS  += -L /opt/local/libexec/llvm-3.2/lib
 
    # When using libclang built by (home)brew
-   CPPFLAGS += -I/usr/local/opt/llvm/include
-   LDFLAGS  += -L/usr/local/opt/llvm/lib
+   CPPFLAGS += -I/usr/local/opt/llvm32/lib/llvm-3.2/include
+   LDFLAGS  += -L/usr/local/opt/llvm32/lib/llvm-3.2/lib
+
+#
+
+SOURCE_FILES = $(wildcard *.cc)
+OBJECT_FILES = $(patsubst %.cc,%.o,$(SOURCE_FILES))
+TARGETS      = $(patsubst %.cc,%,$(SOURCE_FILES))
+
+LDFLAGS  += -lclang
 
 all : $(TARGETS)
 

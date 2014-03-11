@@ -27,6 +27,11 @@ sub new
 
     die unless $self->{docEnv};
 
+    # handle options
+    $self->{options} = {hide => undef,
+                        Options->Split(string => $self->{optionString})};
+
+
     # remove empty lines
     # concat lines that end on "+++"
     my @lines;
@@ -47,6 +52,7 @@ sub new
         }
     }
     $self->{lines} = \@lines;
+    $self->execute();
 
     return $self;
 }
@@ -59,7 +65,10 @@ sub html
 
     die unless $args{html};
 
-    $self->execute();
+    if ($self->{options}->{hide}) {
+        return;
+    }
+
     #$self->convert();
     for my $line (@{$self->{html}}) {
         $args{html}->addLine(line => $line, preserveIndent => 1);

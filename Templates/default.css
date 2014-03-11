@@ -80,8 +80,8 @@ h3.doc  {
 }
 
 h4.doc  {
-    margin-top: 2pt;
-    margin-bottom: .5em;
+    margin-top: 2em;
+    margin-bottom: .1em;
     font-family: arial, sans-serif;
     color: #000;
 }
@@ -440,6 +440,20 @@ a.docrefcomment {
     text-decoration: none;
 }
 
+div.framed {
+    -moz-border-radius:10px;
+    -khtml-border-radius:10px;
+    border-radius:10px;
+    border: 1px dotted #8E8E8E;
+    background-color: #FFFFFF;
+    padding: 40px;
+    margin-left: 10px;
+    margin-right: 40px;
+    margin-bottom:15px;
+    margin-top:0px;
+}
+
+
 /* Code */
 
 div.code {
@@ -767,4 +781,180 @@ span.nav_tut_right {
     margin-right: 1em;
 }
 
+/* f77 syntax */
 
+span.LINENUMBER {
+    color : #af5f00;
+}
+
+span.STATEMENT {
+    color : #af5f00;
+}
+
+span.CONSTANT {
+    color : #c00000;
+}
+
+span.COMMENT {
+    color : #0000c0;
+}
+
+span.STRING {
+    color : #c00000;
+}
+
+span.TYPE {
+    color : #008000;
+}
+
+span.UNITSTATEMENT {
+    color : #c000c0;
+}
+
+span.INTRINSIC {
+    color : #008080;
+}
+
+span.STATEMENTNUMBER {
+    color : #c000c0;
+}
+
+span.IDENTIFIER {
+    color : #008080;
+}
+
+span.COL6 {
+    color :            #000000;
+    background-color : #FFFF00;
+}
+
+a.EXTERNAL {
+    text-decoration: none;
+    border-bottom:1px solid;
+    color: inherit;
+}
+
+a.EXTERNAL:hover {
+    text-decoration: none;
+    border-bottom:0px;
+    color: inherit;
+}
+
+span.EXTERNAL_TIP {
+    text-decoration: none;
+    border-bottom:1px solid;
+    border-color: #c00000;
+    color: inherit;
+}
+
+span.EXTERNAL_TIP:hover {
+    text-decoration: none;
+    border-bottom:0px;
+    border-color: #c00000;
+    color: inherit;
+}
+
+a.VARIABLE {
+    text-decoration: none;
+    border-bottom:1px dotted;
+    color: inherit;
+}
+
+a.VARIABLE:hover {
+    text-decoration: none;
+    border-bottom:0px;
+    color: inherit;
+}
+
+a.ARGDEF {
+    text-decoration: none;
+    border-bottom:1px solid;
+    color: inherit;
+}
+
+a.ARGDEF:hover {
+    text-decoration: none;
+    border-bottom:0px;
+    color: inherit;
+}
+
+a.SUBROUTINE {
+    text-decoration: none;
+    border-bottom:1px solid;
+    color: inherit;
+}
+
+a.SUBROUTINE:hover {
+    text-decoration: none;
+    border-bottom:0px;
+    color: inherit;
+}
+
+a.FUNCTION {
+    text-decoration: none;
+    border-bottom:1px solid;
+    color: inherit;
+}
+
+a.FUNCTION:hover {
+    text-decoration: none;
+    border-bottom:0px;
+    color: inherit;
+}
+
+div.DESCRIPTION {
+    margin-bottom:0px;
+    margin-top:0px;
+    padding-top:1px;
+    padding-bottom:5px;
+    padding-left:10px;
+    padding-right:10px;
+    line-height:1.4em;
+}
+
+span.DESCRIPTION {
+    font-family:  Menlo, monospace, Monaco, Courier, 'Andale Mono', Monaco, Consolas;
+    font-size: 13px;
+}
+
+tr.ARGUMENTS {
+    padding:30px;
+    margin:30px;
+    border-spacing:30px;
+    padding: 0px 300px 0px 0px;
+    margin: 0px 300px 0px 0px;
+}
+
+td.VARNAME {
+    margin-left: 15px;
+    border: outset 0pt;
+    padding: 0px 30px 0px 0px;
+
+    text-align: left;
+    vertical-align: top;
+    font-weight:bold;
+    width: 10%;
+    text-decoration: none;
+}
+
+span.TYPE.ARGUMENTS {
+    color: #093DA0;
+}
+
+a.ARGUMENTS {
+    text-decoration: none;
+    border-bottom:1px dotted;
+    color: inherit;
+}
+
+a.ARGUMENTS:hover {
+    text-decoration: none;
+    border-bottom:0px;
+    color: inherit;
+}
+
+td.DESCRIPTION {
+    border: outset 0pt;
+    padding: 0px 300px 0px 0px;
+    margin: 0px 300px 0px 0px;
+}

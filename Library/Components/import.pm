@@ -10,6 +10,7 @@ sub MakeCodeBlock
     my %args = (code => undef,
                 file => undef,
                 create => 0,
+                optionString => undef,
                 @_);
 
     my @lines = @{$args{code}};
@@ -18,7 +19,11 @@ sub MakeCodeBlock
     if (scalar(@lines)>0) {
         my $code = "CODE";
         if ($args{file}) {
-            $code = $code . " (file=$args{file}, create=$args{create})";
+            $code = $code . " (file=$args{file}, create=$args{create}";
+            if ($args{optionString}) {
+                $code = $code . ", " . $args{optionString};
+            }
+            $code = $code . ")";
         }
         unshift(@lines, "___ $code ___");
 
@@ -35,6 +40,7 @@ sub ExpandBriefComments
 {
     my $class = shift;
     my %args = (input => undef,
+                optionString => undef,
                 @_);
 
     my @input = @{$args{input}};
@@ -66,11 +72,15 @@ sub ExpandBriefComments
         while ($i<=$#input) {
             $line = $input[$i];
             if (($line =~ /^\s*$/) || ($line =~ /^\s*$Import::Comment-.*$/)) {
-                push(@output, Import->MakeCodeBlock(code => \@codeLines));
+                push(@output, Import->MakeCodeBlock(
+                                        code => \@codeLines,
+                                        optionString => $args{optionString}));
                 last;
             }
             if ($line =~ /^\s*$Import::Comment.*$/) {
-                push(@output, Import->MakeCodeBlock(code => \@codeLines));
+                push(@output, Import->MakeCodeBlock(
+                                        code => \@codeLines,
+                                        optionString => $args{optionString}));
                 --$i;
                 last;
             }
@@ -78,7 +88,8 @@ sub ExpandBriefComments
             ++$i;
         }
     }
-    push(@output, Import->MakeCodeBlock(code => \@codeLines));
+    push(@output, Import->MakeCodeBlock(code => \@codeLines,
+                                        optionString => $args{optionString}));
     return @output;
 }
 
@@ -87,6 +98,7 @@ sub ExpandComments
 {
     my $class = shift;
     my %args = (input => undef,
+                optionString => undef,
                 @_);
 
     my @input = @{$args{input}};
@@ -97,7 +109,9 @@ sub ExpandComments
         my $line = $input[$i];
 
         if ($line =~ s/^\s*$Import::Comment(.*)$//) {
-            push(@output, Import->MakeCodeBlock(code => \@codeLines));
+            push(@output, Import->MakeCodeBlock(
+                                        code => \@codeLines,
+                                        optionString => $args{optionString}));
             push(@output, $1);
             next;
         }
@@ -112,7 +126,8 @@ sub ExpandComments
             }
         }
     }
-    push(@output, Import->MakeCodeBlock(code => \@codeLines));
+    push(@output, Import->MakeCodeBlock(code => \@codeLines,
+                                        optionString => $args{optionString}));
     return @output;
 }
 
@@ -122,6 +137,7 @@ sub RemoveComments
     my %args = (input => undef,
                 file => undef,
                 create => 0,
+                optionString => undef,
                 @_);
 
     my @input = @{$args{input}};
@@ -170,16 +186,22 @@ sub Parse
     my @output;
 
     if ($option{brief}) {
-        @output = Import->ExpandBriefComments(input => \@input);
+        @output = Import->ExpandBriefComments(
+                                          input => \@input,
+                                          optionString => $args{optionString});
     } else {
         if ($option{stripped}) {
-            @output = Import->RemoveComments(input => \@input,
-                                             file => $args{file},
-                                             create => $args{create});
+            @output = Import->RemoveComments(
+                                          input => \@input,
+                                          file => $args{file},
+                                          create => $args{create},
+                                          optionString => $args{optionString});
         } else {
-            @output = Import->MakeCodeBlock(code => \@input,
-                                            file => $args{file},
-                                            create => $args{create});
+            @output = Import->MakeCodeBlock(
+                                          code => \@input,
+                                          file => $args{file},
+                                          create => $args{create},
+                                          optionString => $args{optionString});
         }
     }
 

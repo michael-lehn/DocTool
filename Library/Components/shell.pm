@@ -29,6 +29,8 @@ sub new
 
     # handle options
     $self->{options} = {hide => undef,
+                        path => ".",
+                        height => undef,
                         Options->Split(string => $self->{optionString})};
 
 
@@ -92,6 +94,7 @@ sub execute
                                                prefix => $ENV{TMP_DIR});
     my $cmd = "mkdir -p $ENV{SHELL_HOME_DIR};" .
               "cd $ENV{SHELL_HOME_DIR};" .
+              "cd $self->{options}->{path};".
               "export PS4='$Shell::MagicNumber';" .
               "bash -vx $shellScript > $shellOutput 2>&1";
     my $exitCode = system($cmd);
@@ -100,11 +103,16 @@ sub execute
                                                removeNewlines => 1);
 
     my @html;
+    my $style = "";
+
+    if ($self->{options}->{height}) {
+        $style = "style=\"height:$self->{options}->{height}em;\"";
+    }
 
     if ($exitCode==0) {
-        push(@html, "<div class=\"shell\"><pre>\n");
+        push(@html, "<div class=\"shell\" $style><pre>\n");
     } else {
-        push(@html, "<div class=\"shell shell_error\"><pre>\n");
+        push(@html, "<div class=\"shell shell_error\" $style><pre>\n");
     }
 
     my $inCmd = undef;

@@ -116,64 +116,69 @@ DocUtils->Install(file => $ENV{JS_TOOLTIP}, to => $ENV{HTML_DIR});
 ###
 #######
 
-my %cxxfileExt = (h   => 1,
-                  tcc => 1,
-                  cc  => 1,
-                  cxx => 1);
+    my %cxxfileExt = (h   => 1,
+                      tcc => 1,
+                      c   => 1,
+                      cc  => 1,
+                      cxx => 1);
 
-my @headerfile;
-my %headerfileExt = (h => 1);
-foreach my $ext (keys %headerfileExt) {
-    push(@headerfile, DocUtils->FindFiles(path => $ENV{DOCSRC_DIR},
-                                          pattern => '.*\.' . $ext . "\$"));
-}
+    my @headerfile;
+    my %headerfileExt = (h => 1);
 
-print STDERR "\n";
-print STDERR "[INFO] Updating CxxIndex database:\n";
+if (undef) {
 
-for my $headerfile (sort @headerfile) {
-    my $isUpToDate = CxxIndex->IsUpToDate(file => $headerfile);
-    if (!$isUpToDate || $DocTool__force) {
-        printf STDERR "[INFO] Processing '$headerfile'\n";
-        CxxIndex->UpdateDB(headerfile => $headerfile);
-        CxxIndex->Touch(file => $headerfile);
+    foreach my $ext (keys %headerfileExt) {
+        push(@headerfile, DocUtils->FindFiles(path => $ENV{DOCSRC_DIR},
+                                              pattern => '.*\.' . $ext . "\$"));
     }
-}
-print STDERR "[INFO] done.\n";
 
-print STDERR "\n";
-print STDERR "[INFO] Updating CODEREF blocks in doc files:\n";
+    print STDERR "\n";
+    print STDERR "[INFO] Updating CxxIndex database:\n";
 
-my %obsolete;
-for my $headerfile (sort @headerfile) {
-    my $obsolete = CxxIndex->UpdateCodeRefStubs(headerfile => $headerfile);
-    if (scalar(keys %{$obsolete})) {
-        $obsolete{$headerfile} = $obsolete;
-    }
-}
-if (scalar(keys %obsolete)) {
-    printf STDERR "\n\n";
-    printf STDERR "[ERROR] Fix the following obsolete CODEREFs:\n";
-    foreach my $file (keys %obsolete) {
-        my $docfile = $file;
-        if ($docfile =~ /^(.*)\./) {
-            $docfile = "${1}.doc";
-        }
-
-        printf STDERR "[ERROR] In '$docfile':\n";
-        foreach my $line (sort {$a <=> $b} keys %{$obsolete{$file}}) {
-            my $str = sprintf("%5d", $line);
-            printf STDERR "[ERROR]    Line $str:  " .
-                          "Id=$obsolete{$file}->{$line}\n";
+    for my $headerfile (sort @headerfile) {
+        my $isUpToDate = CxxIndex->IsUpToDate(file => $headerfile);
+        if (!$isUpToDate || $DocTool__force) {
+            printf STDERR "[INFO] Processing '$headerfile'\n";
+            CxxIndex->UpdateDB(headerfile => $headerfile);
+            CxxIndex->Touch(file => $headerfile);
         }
     }
-    printf STDERR "\n";
-    die;
-}
-print STDERR "[INFO] done.\n";
+    print STDERR "[INFO] done.\n";
 
-if ($DocTool__cxxIndexOnly) {
-    exit;
+    print STDERR "\n";
+    print STDERR "[INFO] Updating CODEREF blocks in doc files:\n";
+
+    my %obsolete;
+    for my $headerfile (sort @headerfile) {
+        my $obsolete = CxxIndex->UpdateCodeRefStubs(headerfile => $headerfile);
+        if (scalar(keys %{$obsolete})) {
+            $obsolete{$headerfile} = $obsolete;
+        }
+    }
+    if (scalar(keys %obsolete)) {
+        printf STDERR "\n\n";
+        printf STDERR "[ERROR] Fix the following obsolete CODEREFs:\n";
+        foreach my $file (keys %obsolete) {
+            my $docfile = $file;
+            if ($docfile =~ /^(.*)\./) {
+                $docfile = "${1}.doc";
+            }
+
+            printf STDERR "[ERROR] In '$docfile':\n";
+            foreach my $line (sort {$a <=> $b} keys %{$obsolete{$file}}) {
+                my $str = sprintf("%5d", $line);
+                printf STDERR "[ERROR]    Line $str:  " .
+                              "Id=$obsolete{$file}->{$line}\n";
+            }
+        }
+        printf STDERR "\n";
+        die;
+    }
+    print STDERR "[INFO] done.\n";
+
+    if ($DocTool__cxxIndexOnly) {
+        exit;
+    }
 }
 
 
@@ -190,6 +195,7 @@ my @sourcefile;
 my %sourcefileExt = (cxx => 1,
                      tcc => 1,
                      cc  => 1,
+                     c   => 1,
                      hpp => 1,
                      f   => 1);
 foreach my $ext (keys %sourcefileExt) {
@@ -442,7 +448,7 @@ if ($DocTool__convertSourcefiles || $DocTool__force) {
     if ($DocTool__createCrossReferences || $DocTool__force) {
         CxxCrossRef->ResetAll();
         my @allfiles;
-        foreach my $ext ("cxx", "cc") {
+        foreach my $ext ("cxx", "cc", "c") {
             push(@allfiles, DocUtils->FindFiles(path => $ENV{DOCSRC_DIR},
                                                 pattern => '.*\.'.$ext."\$"));
         }

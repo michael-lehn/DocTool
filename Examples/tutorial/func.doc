@@ -1,26 +1,11 @@
 
-*--[CODEREF]----------------------------------------------------------------*
-|                                                                           |
-|  int                                                                      |
-|  func(int a, int b);                                                      |
-|                                                                           |
-*---------------------------------------------------------------------------*
-                                                          [c:@F@func#I#I#int]
 
-    Function `func`.
+################################################################################
+#
+#  The following CODEREFs are automatically created stubs.
+#
+################################################################################
 
-*--[CODEREF]----------------------------------------------------------------*
-|                                                                           |
-|  template <typename T>                                                    |
-|      typename RestrictTo<IsSame<T,int>::value,                            |
-|               void>::Type                                                 |
-|      dummy();                                                             |
-|                                                                           |
-*---------------------------------------------------------------------------*
-                         [c:@FT@>1#Tdummy#templatetypenameTtypenameRestrictT]
-                         [oIsSameTintvaluevoidType                          ]
-
-    Function `dummy` with 1 template parameters.
 
 *--[CODEREF]----------------------------------------------------------------*
 |                                                                           |
@@ -31,9 +16,43 @@
 |                                                                           |
 *---------------------------------------------------------------------------*
                          [c:@FT@>1#Tdummy#templatetypenameTtypenameRestrictT]
-                         [oIsSameTlongvaluevoidType                         ]
+                         [oIsSameT,longvalue,voidType                       ]
 
     Function `dummy` with 1 template parameters.
+
+
+
+*--[CODEREF]----------------------------------------------------------------*
+|                                                                           |
+|  template <typename T>                                                    |
+|      typename RestrictTo<IsSame<T,int>::value,                            |
+|               void>::Type                                                 |
+|      dummy();                                                             |
+|                                                                           |
+*---------------------------------------------------------------------------*
+                         [c:@FT@>1#Tdummy#templatetypenameTtypenameRestrictT]
+                         [oIsSameT,intvalue,voidType                        ]
+
+    Function `dummy` with 1 template parameters.
+
+
+
+################################################################################
+#
+#  The following CODEREFs are automatically created stubs.
+#
+################################################################################
+
+
+*--[CODEREF]----------------------------------------------------------------*
+|                                                                           |
+|  int                                                                      |
+|  func(int a, int b);                                                      |
+|                                                                           |
+*---------------------------------------------------------------------------*
+                                                          [c:@F@func#I#I#int]
+
+    Function `func`.
 
 
 

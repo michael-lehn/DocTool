@@ -1,4 +1,4 @@
-CXX      = clang++-3.2
+CXX      = clang++
 CXXFLAGS += -std=c++11 -Wall -Werror
 
 #
@@ -10,8 +10,8 @@ CXXFLAGS += -std=c++11 -Wall -Werror
 #  LDFLAGS  += -L /opt/local/libexec/llvm-3.2/lib
 
    # When using libclang built by (home)brew
-   CPPFLAGS += -I/usr/local/opt/llvm32/lib/llvm-3.2/include
-   LDFLAGS  += -L/usr/local/opt/llvm32/lib/llvm-3.2/lib
+   CPPFLAGS += -I/usr/local/opt/llvm/include
+   LDFLAGS  += -L/usr/local/opt/llvm/lib -stdlib=libc++
 
 #
 

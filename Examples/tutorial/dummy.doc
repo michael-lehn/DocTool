@@ -9,7 +9,7 @@ Here we describe what our class
 |  struct Dummy;                                                            |
 |                                                                           |
 *---------------------------------------------------------------------------*
-                                                      [c:@S@DummystructDummy]
+                                                     [c:@S@DummystructDummy;]
 is actually doing.
 
 
@@ -41,4 +41,6 @@ Functions
                                                               [c:@F@foo#void]
 
     This is another foo function.
+
+
 

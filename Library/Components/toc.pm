@@ -33,7 +33,7 @@ sub AddSection
         pop(@{$toc->{counter}});
     }
 
-    my $tag = join(".", @{$toc->{counter}});
+    my $tag = "toc" . join(".", @{$toc->{counter}});
     push(@{$toc->{sectionTags}}, $tag);
     push(@{$toc->{sectionTypes}}, $args{sectionType});
     push(@{$toc->{sections}}, $args{sectionTag});
